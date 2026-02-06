@@ -311,9 +311,9 @@
     });
     var listings = document.getElementById('listingDiv');
     var stores = L.geoJson().addTo(map);
-var googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTOlcqoq_IZmg7DTyNWtqx8U8UfdhNGzuTZ7gjiRTdcEaR3rRv6u_T39hAXfQV23zlW_rx0OvQY9j2-/pub?output=csv';
+//var googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTOlcqoq_IZmg7DTyNWtqx8U8UfdhNGzuTZ7gjiRTdcEaR3rRv6u_T39hAXfQV23zlW_rx0OvQY9j2-/pub?output=csv';
 
-var storesData = omnivore.csv(googleSheetURL);
+var storesData = omnivore.csv('assets/data/stores.csv');
 
     function setActive(el) {
       var siblings = listings.getElementsByTagName('div');
