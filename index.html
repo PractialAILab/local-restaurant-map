@@ -7,7 +7,7 @@
   <title>Better Source - Restaurant Supply Insight</title>
   
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="assets/icons/BS64x64logo.png">
+  <link rel="icon" type="image/png" href="/assets/icons/BS64x64logo.png">
   
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -130,6 +130,26 @@
       color: #7f8c8d;
     }
     
+    /* Error Message */
+    #errorMessage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 2000;
+      display: none;
+      text-align: center;
+      max-width: 400px;
+    }
+    
+    #errorMessage.show {
+      display: block;
+    }
+    
     /* Popup Styles */
     .leaflet-popup-content-wrapper {
       border-radius: 8px;
@@ -215,7 +235,7 @@
   <!-- Header -->
   <div id="header">
     <h1>
-      <img src="assets/icons/BS64x64logo.png" alt="Better Source Logo">
+      <img src="/assets/icons/BS64x64logo.png" alt="Better Source Logo">
       Better Source - Restaurant Supply Insight
       <span id="searchIcon"><i class="fa fa-search"></i></span>
     </h1>
@@ -227,12 +247,19 @@
     <div id="searchResults"></div>
   </div>
   
-
+  <!-- Error Message -->
+  <div id="errorMessage">
+    <h3>⚠️ Data Loading Error</h3>
+    <p id="errorText">Unable to load restaurant data.</p>
+    <button onclick="location.reload()" style="margin-top: 15px; padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Retry
+    </button>
+  </div>
   
   <!-- Map Container -->
   <div id="map"></div>
   
-  <!-- FOR RESTAURANTS BUTTON - Set display to 'block' to show, 'none' to hide -->
+  <!-- FOR RESTAURANTS BUTTON -->
   <div id="restaurantCTA" style="display: block; position: absolute; bottom: 20px; right: 20px; z-index: 1000;">
     <a href="restaurant-application.html" 
        style="background: #2ecc71; color: white; padding: 12px 20px; 
@@ -263,61 +290,95 @@
     var allMarkers = [];
     var markersLayer = L.layerGroup().addTo(map);
     
-    // Load and display the restaurant data
-    var storesData = omnivore.csv('assets/data/stores.csv')
-      .on('ready', function() {
-        console.log('CSV loaded successfully');
-        
-        // Process each restaurant
-        this.eachLayer(function(layer) {
-          var props = layer.feature.properties;
+    // Function to show error
+    function showError(message) {
+      document.getElementById('errorText').textContent = message;
+      document.getElementById('errorMessage').classList.add('show');
+    }
+    
+    // Try multiple path variations for the CSV file
+    var csvPaths = [
+      '/assets/data/stores.csv',      // Absolute path (preferred for Vercel)
+      'assets/data/stores.csv',        // Relative path
+      './assets/data/stores.csv',      // Explicit relative
+      '/Assets/data/stores.csv',       // Case variation
+      '/assets/Data/stores.csv'        // Case variation
+    ];
+    
+    var currentPathIndex = 0;
+    
+    function tryLoadCSV() {
+      if (currentPathIndex >= csvPaths.length) {
+        console.error('All CSV path attempts failed');
+        showError('Unable to load restaurant data. Please check that stores.csv exists in the assets/data folder.');
+        return;
+      }
+      
+      var currentPath = csvPaths[currentPathIndex];
+      console.log('Attempting to load CSV from:', currentPath);
+      
+      // Load and display the restaurant data
+      var storesData = omnivore.csv(currentPath)
+        .on('ready', function() {
+          console.log('CSV loaded successfully from:', currentPath);
           
-          // Create custom popup content
-          var popupContent = '<div class="restaurant-popup">';
-          
-          // Restaurant name (same for all - no badge shown)
-          popupContent += '<h3>' + props.name + '</h3>';
-          
-          // Address
-          popupContent += '<p><strong>Address:</strong> ' + props.address + '</p>';
-          
-          // Local sourcing info
-          popupContent += '<p><strong>Local Sourcing:</strong> ' + props.products + '</p>';
-          
-          // Coupon section (only for premium with valid coupon URL)
-          if (props.subscription_tier === 'premium' && props.direct_image_url && props.direct_image_url.trim() !== '') {
-            popupContent += '<div class="coupon-section">';
-            popupContent += '<p>💰 Current Special Offer:</p>';
-            popupContent += '<img src="' + props.direct_image_url + '" alt="Special Coupon Offer" onclick="window.open(this.src, \'_blank\')">';
-            popupContent += '<small style="display: block; margin-top: 5px; color: #7f8c8d;">Click image to view full size</small>';
+          // Process each restaurant
+          this.eachLayer(function(layer) {
+            var props = layer.feature.properties;
+            
+            // Create custom popup content
+            var popupContent = '<div class="restaurant-popup">';
+            
+            // Restaurant name
+            popupContent += '<h3>' + props.name + '</h3>';
+            
+            // Address
+            popupContent += '<p><strong>Address:</strong> ' + props.address + '</p>';
+            
+            // Local sourcing info
+            popupContent += '<p><strong>Local Sourcing:</strong> ' + props.products + '</p>';
+            
+            // Coupon section (only for premium with valid coupon URL)
+            if (props.subscription_tier === 'premium' && props.direct_image_url && props.direct_image_url.trim() !== '') {
+              popupContent += '<div class="coupon-section">';
+              popupContent += '<p>💰 Current Special Offer:</p>';
+              popupContent += '<img src="' + props.direct_image_url + '" alt="Special Coupon Offer" onclick="window.open(this.src, \'_blank\')">';
+              popupContent += '<small style="display: block; margin-top: 5px; color: #7f8c8d;">Click image to view full size</small>';
+              popupContent += '</div>';
+            }
+            
             popupContent += '</div>';
+            
+            // Bind popup to marker
+            layer.bindPopup(popupContent, {
+              maxWidth: 400,
+              minWidth: 250
+            });
+            
+            // Store marker for search
+            allMarkers.push({
+              layer: layer,
+              name: props.name.toLowerCase(),
+              address: props.address.toLowerCase(),
+              properties: props
+            });
+          });
+          
+          // Fit map to show all markers
+          if (allMarkers.length > 0) {
+            map.fitBounds(markersLayer.getBounds(), { padding: [50, 50] });
           }
-          
-          popupContent += '</div>';
-          
-          // Bind popup to marker
-          layer.bindPopup(popupContent, {
-            maxWidth: 400,
-            minWidth: 250
-          });
-          
-          // Store marker for search (all markers look the same)
-          allMarkers.push({
-            layer: layer,
-            name: props.name.toLowerCase(),
-            address: props.address.toLowerCase(),
-            properties: props
-          });
-        });
-        
-        // Fit map to show all markers
-        map.fitBounds(markersLayer.getBounds(), { padding: [50, 50] });
-      })
-      .on('error', function(error) {
-        console.error('Error loading CSV:', error);
-        alert('Error loading restaurant data. Please refresh the page.');
-      })
-      .addTo(markersLayer);
+        })
+        .on('error', function(error) {
+          console.error('Error loading CSV from', currentPath, ':', error);
+          currentPathIndex++;
+          tryLoadCSV();
+        })
+        .addTo(markersLayer);
+    }
+    
+    // Start loading CSV
+    tryLoadCSV();
     
     // Search functionality
     $('#searchIcon').click(function() {
