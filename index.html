@@ -1,528 +1,454 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <meta charset=utf-8 />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Local Restaurant Local Source Store Locator</title>
-  <!--To do - ad opengraph metadata-->
-  <!--Fonts-->
-  <link href='https://fonts.googleapis.com/css?family=Londrina+Solid|Oswald:700|Archivo+Narrow|Source+Sans+Pro:400,600,700,900' rel='stylesheet' type='text/css'>
-  <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/css/font-awesome.min.css' rel='stylesheet' />
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <!--Google Maps API NO Key!! -->
-  <!--script src="https://maps.google.com/maps/api/js?v=3"></script-->
-  <!--Leaflet 1.0.3-->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-  <!--Leaflet Plugins-->
-  <link rel="stylesheet" type="text/css" href="assets/L.VisualClick.css" />
-  <script src="assets/L.VisualClick.js"></script>
-  <!--script src='https://unpkg.com/leaflet.gridlayer.googlemutant@latest/Leaflet.GoogleMutant.js'></script-->
-  <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
-  <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js'></script>
-  <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
-  <!--script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/2.6.2/leaflet-routing-machine.min.js"></script-->
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
   <style>
-    body {
-      color: #404040;
-      font-family: 'Source Sans Pro', 'Helvetica Neue', Sans-serif;
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      -webkit-font-smoothing: antialiased;
     }
-
-    * {
-      font-family: 'Source Sans Pro', 'Helvetica Neue', Sans-serif;
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-    }
-
-    h1 {
-      font-size: 2em;
-      margin: 0;
-      font-weight: 400;
-      font-family: 'Londrina Solid', cursive;
-    }
-
-    a {
-      /*color:#404040;*/
-      color: #b74042;
-      text-decoration: none;
-    }
-
-    a:hover {
-      color: #101010;
-    }
-
-    .sidebar {
-      position: absolute;
-      width: 33.3333%;
-      min-width: 200px;
-      max-width: 400px;
-      height: 100%;
-      top: 0;
-      left: 0;
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100vh;
       overflow: hidden;
-      border-right: 1px solid rgba(0, 0, 0, 0.25);
     }
-
-    .pad2 {
-      padding: 20px;
-    }
-
-    .quiet {
-      color: #888;
-    }
-
-    .map {
+    
+    #map {
       position: absolute;
-      left: 33.3333%;
-      /*width: 66.6666%;*/
       top: 0;
       bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1;
     }
-
-    .heading {
-      background: #fff;
-      border-bottom: 1px solid #eee;
-      height: auto;
-      /*      line-height:60px;*/
-      padding: 10px;
+    
+    /* Header Styles */
+    #header {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: white;
+      padding: 15px 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      max-width: 90%;
     }
-
-    #listingDiv {
-      overflow: auto;
-      float: left;
+    
+    h1 {
+      font-size: 1.5em;
+      color: #2c3e50;
+      text-align: center;
+      margin: 0;
     }
-
-    .listings {
-      height: 100%;
-      overflow: auto;
-      padding-bottom: 60px;
-    }
-
-    .listings .item {
-      display: block;
-      border-bottom: 1px solid #eee;
-      padding: 10px;
-      text-decoration: none;
-    }
-
-    .listings .item:last-child {
-      border-bottom: none;
-    }
-
-    .listings .item .title {
-      display: block;
-      /*      color:#00853e;*/
-      color: #000;
-      font-weight: 700;
-    }
-
-    .listings .item .title small {
-      font-weight: 400;
-    }
-
-    .listings .item.active .title,
-    .listings .item .title:hover {
-      color: #b74042;
-    }
-    /*#8cc63f*/
-
-    .listings .item.active {
-      background-color: #f8f8f8;
-    }
-
-    #storeinfo {
-      padding: 10px 10px 20px 10px;
-      display: none;
-      background-color: gainsboro;
-    }
-
-     ::-webkit-scrollbar {
-      width: 3px;
-      height: 3px;
-      border-left: 0;
-      background: rgba(0, 0, 0, 0.1);
-    }
-
-     ::-webkit-scrollbar-track {
-      background: none;
-    }
-
-     ::-webkit-scrollbar-thumb {
-      background: #00853e;
-      border-radius: 0;
-    }
-
-    .clearfix {
-      display: block;
-    }
-
-    .clearfix:after {
-      content: '.';
-      display: block;
-      height: 0;
-      clear: both;
-      visibility: hidden;
-    }
-
-    .leaflet-container .leaflet-marker-icon {
-      cursor: pointer;
-    }
-
-    #searchbox {
-      width: 100%;
-      height: 36px;
-    }
-
-    #search-input {
-      font-size: 18px;
-      width: 100%;
-      margin-top: 5px;
-      box-shadow: 0 1px lightgray;
-      border: none;
-    }
-
-    #closeButton {
-      float: right;
-    }
-
-    #closeButton:hover,
-     :focus {
-      color: #b74042;
-      cursor: pointer;
-      /*padding: 5px;*/
-    }
-
-    #searchIcon:hover,
-     :focus {
-      color: #b74042;
-      cursor: pointer;
-    }
-
-    #infoClose {
-      float: right;
-    }
-
+    
     #searchIcon {
-      float: right;
-      font-size: 26px;
-      margin-top: 1px;
+      margin-left: 10px;
+      cursor: pointer;
+      color: #3498db;
     }
-
-    @media screen and (min-width:601px) and (max-width: 1199px) {
-      .map {
-        width: 66.6666%;
-      }
+    
+    /* Search Box */
+    #searchBox {
+      position: absolute;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      display: none;
+      max-width: 90%;
+      width: 400px;
     }
-
-    @media screen and (max-width:600px) {
-      .map {
-        margin-left: 200px;
-        right: 0;
-        left: 0;
-      }
+    
+    #searchBox.active {
+      display: block;
     }
-
-    @media screen and (min-width: 1200px) {
-      .map {
-        left: 400px;
-        right: 0;
-      }
+    
+    #searchInput {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #3498db;
+      border-radius: 5px;
+      font-size: 1em;
     }
-
-    @media screen and (max-width:968px) {
+    
+    #searchResults {
+      margin-top: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .search-result-item {
+      padding: 10px;
+      border-bottom: 1px solid #ecf0f1;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .search-result-item:hover {
+      background: #ecf0f1;
+    }
+    
+    .search-result-item strong {
+      color: #2c3e50;
+      display: block;
+      margin-bottom: 3px;
+    }
+    
+    .search-result-item small {
+      color: #7f8c8d;
+    }
+    
+    /* Popup Styles */
+    .leaflet-popup-content-wrapper {
+      border-radius: 8px;
+      padding: 0;
+    }
+    
+    .leaflet-popup-content {
+      margin: 15px;
+      min-width: 250px;
+      max-width: 400px;
+    }
+    
+    .restaurant-popup h3 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 1.2em;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .premium-badge {
+      background: linear-gradient(135deg, #f39c12, #e74c3c);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.6em;
+      margin-left: 8px;
+      white-space: nowrap;
+      font-weight: normal;
+    }
+    
+    .restaurant-popup p {
+      margin: 8px 0;
+      color: #555;
+      line-height: 1.5;
+    }
+    
+    .restaurant-popup strong {
+      color: #2c3e50;
+    }
+    
+    .coupon-section {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 5px;
+      margin-top: 12px;
+      border: 2px solid #2ecc71;
+    }
+    
+    .coupon-section hr {
+      border: none;
+      border-top: 1px solid #ddd;
+      margin: 10px 0;
+    }
+    
+    .coupon-section p {
+      font-weight: bold;
+      color: #2ecc71;
+      margin-bottom: 8px;
+    }
+    
+    .coupon-section img {
+      max-width: 100%;
+      border-radius: 5px;
+      margin-top: 5px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .coupon-section img:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transform: scale(1.02);
+    }
+    
+    /* Marker Styles */
+    .premium-marker {
+      filter: hue-rotate(45deg) brightness(1.2);
+    }
+    
+    /* Legend */
+    .legend {
+      position: absolute;
+      bottom: 30px;
+      right: 20px;
+      z-index: 1000;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      font-size: 0.9em;
+    }
+    
+    .legend h4 {
+      margin: 0 0 10px 0;
+      color: #2c3e50;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin: 5px 0;
+    }
+    
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    
+    .legend-color.basic {
+      background: #3498db;
+    }
+    
+    .legend-color.premium {
+      background: linear-gradient(135deg, #f39c12, #e74c3c);
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
       h1 {
         font-size: 1.2em;
       }
-      #searchIcon {
-        font-size: 16px;
+      
+      #header {
+        padding: 10px 15px;
+        top: 10px;
+      }
+      
+      #searchBox {
+        top: 70px;
+        width: 90%;
+      }
+      
+      .legend {
+        bottom: 10px;
+        right: 10px;
+        font-size: 0.8em;
       }
     }
   </style>
 </head>
-
 <body>
-  <div id="app">
-    <div class='sidebar'>
-      <div class='heading'>
-        <h1>Local Restaurant Local Source Store Locator<span id="searchIcon"><i class="fa fa-search"></i></span></h1>
-        <div id="searchbox" style="display:none;">
-          <input type="text" id="search-input" autofocus/>
-        </div>
-      </div>
-      <div id="storeinfo"><i id="infoClose" class="fa fa-times fa-2x"></i>
-        <div id="infoDivInner"></div>
-      </div>
-      <div id='listingDiv' class='listings'></div>
+  
+  <!-- Header -->
+  <div id="header">
+    <h1>Local Restaurant Local Source Store Locator<span id="searchIcon"><i class="fa fa-search"></i></span></h1>
+  </div>
+  
+  <!-- Search Box -->
+  <div id="searchBox">
+    <input type="text" id="searchInput" placeholder="Search restaurants...">
+    <div id="searchResults"></div>
+  </div>
+  
+  <!-- Legend -->
+  <div class="legend">
+    <h4>Membership Tiers</h4>
+    <div class="legend-item">
+      <div class="legend-color basic"></div>
+      <span>Basic Member</span>
     </div>
-    <div id='map' class='map'>
-      <!--Sidebar plugin no longer used ---->
-      <!--div id="sidebar">
-        <h1>Store Information and Products</h1>
-      </div-->
+    <div class="legend-item">
+      <div class="legend-color premium"></div>
+      <span>Premium Member</span>
     </div>
   </div>
+  
+  <!-- Map Container -->
+  <div id="map"></div>
+  
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <!-- Omnivore for CSV loading -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-omnivore/0.3.4/leaflet-omnivore.min.js"></script>
+  
   <script>
-    //basic map setup map and basemap
-    var map = L.map('map')
-      .setView([40.410976, -82.928835], 8);
-
-    //L.hash(map);
-    var cartodbLight = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-      subdomains: 'abcd'
+    // Initialize the map
+    var map = L.map('map').setView([39.7392, -104.9903], 11);
+    
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19
     }).addTo(map);
-//     var googleStreets = L.gridLayer.googleMutant({
-//       type: 'roadmap' // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
-//     }).addTo(map);
-
-    //layer control
-    var baselayers = {
-//       "Google Street" : googleStreets,
-      "Grayscale"     : cartodbLight
-    };
     
-    var layerControl = new L.control.layers(baselayers, null).addTo(map);
-      
-    //end basic map
-
-    //show search on search icon click
-    //global variables - could add more here
-    var locationLat = [];
-    var locationLng = [];
-    var locMarker;
-    var infoDiv = document.getElementById('storeinfo');
-    var infoDivInner = document.getElementById('infoDivInner');
-    var toggleSearch = document.getElementById('searchIcon');
-    var hasCircle = 0;
-    var circle = [];
-    //close store infor when x is clicked
-    var userLocation;
-    $("#infoClose").click(function() {
-      $("#storeinfo").hide();
-      if (map.hasLayer(circle)) {
-        map.removeLayer(circle);
-      }
-    });
-    var listings = document.getElementById('listingDiv');
-    var stores = L.geoJson().addTo(map);
-//var googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTOlcqoq_IZmg7DTyNWtqx8U8UfdhNGzuTZ7gjiRTdcEaR3rRv6u_T39hAXfQV23zlW_rx0OvQY9j2-/pub?output=csv';
-
-var storesData = omnivore.csv('assets/data/stores.csv');
-
-    function setActive(el) {
-      var siblings = listings.getElementsByTagName('div');
-      for (var i = 0; i < siblings.length; i++) {
-        siblings[i].className = siblings[i].className
-          .replace(/active/, '').replace(/\s\s*$/, '');
-      }
-      el.className += ' active';
-    }
+    // Store all markers for search functionality
+    var allMarkers = [];
+    var markersLayer = L.layerGroup().addTo(map);
     
-    function sortGeojson(a,b,prop) {
-      return (a.properties.name.toUpperCase() < b.properties.name.toUpperCase()) ? -1 : ((a.properties.name.toUpperCase() > b.properties.name.toUpperCase()) ? 1 : 0);
-    }
-    
-    storesData.on('ready', function() {
-
-      var storesSorted = storesData.toGeoJSON();
-      //console.log(storesSorted);
-      var sorted = (storesSorted.features).sort(sortGeojson)
-      //console.log(sorted);
-      storesSorted.features = sorted;
-      //console.log(storesSorted)
-      stores.addData(storesSorted);
-      
-      map.fitBounds(stores.getBounds());
-      toggleSearch.onclick = function() {
-        var s = document.getElementById('searchbox');
-        if (s.style.display != 'none') {
-          s.style.display = 'none';
-          toggleSearch.innerHTML = '<i class="fa fa-search"></i>';
-          $("#search-input").val("");
-
-          //search.collapse();
-          document.getElementById('storeinfo').style.display = 'none';
-          $('.item').show();
-        } else {
-          toggleSearch.innerHTML = '<i class="fa fa-times"></i>';
-          s.style.display = 'block';
-
-          //attempt to autofocus search input field when opened
-          $('#search-input').focus();
-        }
-      };
-      stores.eachLayer(function(layer) {
-
-        //New jquery search
-        $('#searchbox').on('change paste keyup', function() {
-          var txt = $('#search-input').val();
-          $('.item').each(function() {
-            if ($(this).text().toUpperCase().indexOf(txt.toUpperCase()) != -1) {
-              $(this).show();
-            } else {
-              $(this).hide();
-            }
+    // Load and display the restaurant data
+    var storesData = omnivore.csv('assets/data/stores.csv')
+      .on('ready', function() {
+        console.log('CSV loaded successfully');
+        
+        // Process each restaurant
+        this.eachLayer(function(layer) {
+          var props = layer.feature.properties;
+          
+          // Create custom popup content
+          var popupContent = '<div class="restaurant-popup">';
+          
+          // Restaurant name with premium badge if applicable
+          if (props.subscription_tier === 'premium') {
+            popupContent += '<h3>' + props.name + ' <span class="premium-badge">⭐ Premium</span></h3>';
+          } else {
+            popupContent += '<h3>' + props.name + '</h3>';
+          }
+          
+          // Address
+          popupContent += '<p><strong>Address:</strong> ' + props.address + '</p>';
+          
+          // Local sourcing info
+          popupContent += '<p><strong>Local Sourcing:</strong> ' + props.products + '</p>';
+          
+          // Coupon section (only for premium with valid coupon URL)
+          if (props.subscription_tier === 'premium' && props.direct_image_url && props.direct_image_url.trim() !== '') {
+            popupContent += '<div class="coupon-section">';
+            popupContent += '<p>💰 Current Special Offer:</p>';
+            popupContent += '<img src="' + props.direct_image_url + '" alt="Special Coupon Offer" onclick="window.open(this.src, \'_blank\')">';
+            popupContent += '<small style="display: block; margin-top: 5px; color: #7f8c8d;">Click image to view full size</small>';
+            popupContent += '</div>';
+          }
+          
+          popupContent += '</div>';
+          
+          // Bind popup to marker
+          layer.bindPopup(popupContent, {
+            maxWidth: 400,
+            minWidth: 250
+          });
+          
+          // Customize marker based on tier
+          if (props.subscription_tier === 'premium') {
+            var premiumIcon = L.divIcon({
+              className: 'premium-marker',
+              html: '<i class="fa fa-star" style="color: #f39c12; font-size: 24px;"></i>',
+              iconSize: [30, 30],
+              iconAnchor: [15, 15]
+            });
+            layer.setIcon(premiumIcon);
+          }
+          
+          // Store marker for search
+          allMarkers.push({
+            layer: layer,
+            name: props.name.toLowerCase(),
+            address: props.address.toLowerCase(),
+            properties: props
           });
         });
-
-        // Shorten layer.feature.properties to just `prop` so we're not
-        // writing this long form over and over again.
-        var prop = layer.feature.properties;
-        var layerx = layer.getLatLng().lat;
-        var layery = layer.getLatLng().lng;
-
-        ////console.log(locationLat);
-        // Each marker on the map.
-        var popup = '<h2 style="margin-bottom:5px;">' + prop.name + '</h2><small class="quiet">' + prop.products +
-          '</small><br /><span id="directions"><a href="https://www.google.com/maps/dir//?saddr=My+Location' + '&daddr=' + layerx + ',' + layery + '" target="_blank">Directions</a></span>';
-        var listing = listings.appendChild(document.createElement('div'));
-        listing.className = 'item';
-        var link = listing.appendChild(document.createElement('a'));
-        link.href = '#';
-        link.className = 'title';
-        link.innerHTML = prop.name;
-        if (prop.products) {
-          link.innerHTML += '<br /><small class="quiet">' + prop.products + '</small>';
-        }
-        var details = listing.appendChild(document.createElement('div'));
-        details.innerHTML = prop.address;
-        var linkClick = 0;
-        link.onclick = function() {
-          linkClick = 1;
-          setActive(listing);
-
-          //console.log(locationLat);
-          // When a menu item is clicked, animate the map to center
-          // its associated layer and open its popup.
-          map.setView(layer.getLatLng(), 16);
-          layer.fire('click');
-          infoDiv.style.display = 'block';
-
-          //layer.openPopup();
-          //		    sidebar.setContent(popup);
-          //		    sidebar.show();
-          return false;
-        };
-        // Marker interaction
-        layer.on('click', function(e) {
-          if (map.hasLayer(userLocation)) {
-            map.removeLayer(userLocation)
-          }
-          //console.log(e.latlng);
-          if (linkClick != 1) {
-            map.setView([e.latlng.lat, e.latlng.lng], 16);
-          }
-          linkClick = 0;
-          $(".item").show();
-          $("#searchbox").hide();
-          toggleSearch.innerHTML = '<i class="fa fa-search"></i>';
-          if (map.hasLayer(circle)) {
-            map.removeLayer(circle);
-            hasCircle = 0;
-          }
-          // 1. center the map on the selected marker.
-          //map.setView(layer.getLatLng(), map.getZoom());
-          // use this forr polygons and lines - map.panTo(layer.getBounds().getCenter());
-          // 2. Set active the markers associated listing.
-          setActive(listing);
-          // sidebar.setContent(popup);
-          infoDiv.style.display = "block";
-          infoDivInner.innerHTML = popup;
-          // sidebar.show();
-          xy = layer.getLatLng();
-          setTimeout(function() {
-            circle = new L.circleMarker(xy, {
-              color: 'red',
-              fillColor: '#f03',
-              fillOpacity: 0.5,
-              radius: 50,
-            }).addTo(map);
-          }, 200);
-        });
-        //popup += '</div>';
-        //layer.bindPopup(popup);
-        layer.setIcon(L.icon({
-          iconUrl: 'assets/icons/sbark-icon.png',
-          iconSize: [50, 50],
-          iconAnchor: [40, 50],
-          popupAnchor: [-14, -47]
-        }));
-      }); //end eachLayer
-      
-    map.locate({
-      setView: true,
-      maxZoom: 10
+        
+        // Fit map to show all markers
+        map.fitBounds(markersLayer.getBounds(), { padding: [50, 50] });
+      })
+      .on('error', function(error) {
+        console.error('Error loading CSV:', error);
+        alert('Error loading restaurant data. Please refresh the page.');
+      })
+      .addTo(markersLayer);
+    
+    // Search functionality
+    $('#searchIcon').click(function() {
+      $('#searchBox').toggleClass('active');
+      if ($('#searchBox').hasClass('active')) {
+        $('#searchInput').focus();
+      }
     });
     
-    map.on('locationfound', function(e) {
-      console.log(e);
-      //8046.72 meters = 5 miles
-      var radius = 80000;
-//       var rmiles = (radius/1609.34).toFixed(0); 
-      var range = 10;
-      userLocation = new L.Circle(e.latlng, radius, {
-        color: 'cadetblue',
-        fillColor: 'cadetblue',
-        fillOpacity: 0.2,
-        radius: 30
-      });
-      var point = turf.point([e.longitude,e.latitude]);
+    $('#searchInput').on('input', function() {
+      var searchTerm = $(this).val().toLowerCase();
+      $('#searchResults').empty();
       
-      var storesWithin = storesSorted.features.map(function(store) {
-        var newpoint = turf.feature(store.geometry);
-        console.log(turf.distance(newpoint, point, {units: 'miles'}));
-        if (turf.distance(newpoint, point, {units: 'miles'}) <= range) {
-          return store
+      if (searchTerm.length < 2) {
+        return;
+      }
+      
+      var results = allMarkers.filter(function(marker) {
+        return marker.name.includes(searchTerm) || marker.address.includes(searchTerm);
+      });
+      
+      if (results.length === 0) {
+        $('#searchResults').html('<div class="search-result-item">No restaurants found</div>');
+        return;
+      }
+      
+      results.forEach(function(result) {
+        var resultHtml = '<div class="search-result-item" data-lat="' + result.layer.getLatLng().lat + '" data-lng="' + result.layer.getLatLng().lng + '">';
+        resultHtml += '<strong>' + result.properties.name;
+        if (result.properties.subscription_tier === 'premium') {
+          resultHtml += ' ⭐';
         }
-      });
-      console.log(storesWithin);
-      
-//       var within = turf.featureCollection(stores.eachLayer(function(store) {
-//         console.log(store);
-//         var newpoint = turf.feature(store.feature.geometry);
-//         console.log(turf.distance(newpoint, point, {units: 'miles'}));
-//         if (turf.distance(newpoint, point, {units: 'miles'}) <= range) return true;
-//       }));
-//       console.log(within);
-//       var size = Object.keys(within.features._layers).length;
-//       console.log(size);
-      var nearest = turf.nearest(point, stores.toGeoJSON());
-      console.log(nearest);
-      if (nearest.properties.name) {
-        $("#infoDivInner").html("Location found!<br>Your nearest store is " + "<strong>" + nearest.properties.name + "</strong>");
-        circle = new L.circleMarker([nearest.geometry.coordinates[1],nearest.geometry.coordinates[0]], {
-          color: 'red',
-          fillColor: '#f03',
-          fillOpacity: 0.5,
-          radius: 50,
-        }).addTo(map);
-        console.log(circle);
-        hasCircle = 1;
-      }
-      $("#storeinfo").show();
-    })
-    }); //end on ready function
-    //setTimeout(function() {        
+        resultHtml += '</strong>';
+        resultHtml += '<small>' + result.properties.address + '</small>';
+        resultHtml += '</div>';
         
-    //sidebar.hide();
-    //}, 500);
-    map.on('click', function() {
-      if (map.hasLayer(userLocation)) {
-        map.removeLayer(userLocation)
+        $('#searchResults').append(resultHtml);
+      });
+    });
+    
+    // Handle search result clicks
+    $(document).on('click', '.search-result-item', function() {
+      var lat = $(this).data('lat');
+      var lng = $(this).data('lng');
+      
+      if (lat && lng) {
+        map.setView([lat, lng], 16);
+        
+        // Find and open the popup for this marker
+        allMarkers.forEach(function(marker) {
+          if (marker.layer.getLatLng().lat === lat && marker.layer.getLatLng().lng === lng) {
+            marker.layer.openPopup();
+          }
+        });
+        
+        $('#searchBox').removeClass('active');
+        $('#searchInput').val('');
+        $('#searchResults').empty();
       }
-      if (map.hasLayer(circle)) {
-        ////console.log('circle');
-        map.removeLayer(circle);
-        hasCircle = 0;
+    });
+    
+    // Close search box when clicking outside
+    $(document).click(function(event) {
+      if (!$(event.target).closest('#searchBox, #searchIcon').length) {
+        $('#searchBox').removeClass('active');
       }
     });
   </script>
 </body>
-
 </html>
