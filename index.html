@@ -6,6 +6,9 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Better Source - Restaurant Supply Insight</title>
   
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="BS64x64logo.png">
+  
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   
@@ -56,159 +59,32 @@
       color: #2c3e50;
       text-align: center;
       margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    h1 img {
+      height: 40px;
+      margin-right: 10px;
     }
     
     #searchIcon {
       margin-left: 10px;
       cursor: pointer;
       color: #3498db;
-       <link rel="icon" type="image/png" href="bs64x64logo.png">
     }
-    
-    /* Search Box */
-    #searchBox {
-      position: absolute;
-      top: 90px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-      display: none;
-      max-width: 90%;
-      width: 400px;
-    }
-    
-    #searchBox.active {
-      display: block;
-    }
-    
-    #searchInput {
-      width: 100%;
-      padding: 10px;
-      border: 2px solid #3498db;
-      border-radius: 5px;
-      font-size: 1em;
-    }
-    
-    #searchResults {
-      margin-top: 10px;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    
-    .search-result-item {
-      padding: 10px;
-      border-bottom: 1px solid #ecf0f1;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    
-    .search-result-item:hover {
-      background: #ecf0f1;
-    }
-  
-    .search-result-item strong {
-      color: #2c3e50;
-      display: block;
-      margin-bottom: 3px;
-    }
-    
-    .search-result-item small {
-      color: #7f8c8d;
-    }
-    
-    /* Popup Styles */
-    .leaflet-popup-content-wrapper {
-      border-radius: 8px;
-      padding: 0;
-    }
-    
-    .leaflet-popup-content {
-      margin: 15px;
-      min-width: 250px;
-      max-width: 400px;
-    }
-    
-    .restaurant-popup h3 {
-      color: #2c3e50;
-      margin-bottom: 10px;
-      font-size: 1.2em;
-    }
-    
-    .restaurant-popup p {
-      margin: 8px 0;
-      color: #555;
-      line-height: 1.5;
-    }
-    
-    .restaurant-popup strong {
-      color: #2c3e50;
-    }
-    
-    .coupon-section {
-      background: #f8f9fa;
-      padding: 12px;
-      border-radius: 5px;
-      margin-top: 12px;
-      border: 2px solid #2ecc71;
-    }
-    
-    .coupon-section hr {
-      border: none;
-      border-top: 1px solid #ddd;
-      margin: 10px 0;
-    }
-    
-    .coupon-section p {
-      font-weight: bold;
-      color: #2ecc71;
-      margin-bottom: 8px;
-    }
-    
-    .coupon-section img {
-      max-width: 100%;
-      border-radius: 5px;
-      margin-top: 5px;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      transition: all 0.3s ease;
-    }
-    
-    .coupon-section img:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      transform: scale(1.02);
-    }
-    
-    /* Mobile Responsive */
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 1.2em;
-      }
-      
-      #header {
-        padding: 10px 15px;
-        top: 10px;
-      }
-      
-      #searchBox {
-        top: 70px;
-        width: 90%;
-      }
-    }
-  </style>
-</head>
 <body>
   
   <!-- Header -->
   <div id="header">
     <h1>
-     <img src="BS64x64logo.png" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 10px;"></h1>
-   <h1>Better Source - Restaurant Supply Insight<span id="searchIcon"><i class="fa fa-search"></i></span></h1>
+      <img src="BS64x64logo.png" alt="Better Source Logo">
+      Better Source - Restaurant Supply Insight
+      <span id="searchIcon"><i class="fa fa-search"></i></span>
+    </h1>
   </div>
-  
+    
   <!-- Search Box -->
   <div id="searchBox">
     <input type="text" id="searchInput" placeholder="Search restaurants...">
