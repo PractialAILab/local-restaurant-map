@@ -135,20 +135,6 @@
       color: #2c3e50;
       margin-bottom: 10px;
       font-size: 1.2em;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    
-    .premium-badge {
-      background: linear-gradient(135deg, #f39c12, #e74c3c);
-      color: white;
-      padding: 3px 10px;
-      border-radius: 12px;
-      font-size: 0.6em;
-      margin-left: 8px;
-      white-space: nowrap;
-      font-weight: normal;
     }
     
     .restaurant-popup p {
@@ -195,50 +181,6 @@
       transform: scale(1.02);
     }
     
-    /* Marker Styles */
-    .premium-marker {
-      filter: hue-rotate(45deg) brightness(1.2);
-    }
-    
-    /* Legend */
-    .legend {
-      position: absolute;
-      bottom: 30px;
-      right: 20px;
-      z-index: 1000;
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-      font-size: 0.9em;
-    }
-    
-    .legend h4 {
-      margin: 0 0 10px 0;
-      color: #2c3e50;
-    }
-    
-    .legend-item {
-      display: flex;
-      align-items: center;
-      margin: 5px 0;
-    }
-    
-    .legend-color {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      margin-right: 10px;
-    }
-    
-    .legend-color.basic {
-      background: #3498db;
-    }
-    
-    .legend-color.premium {
-      background: linear-gradient(135deg, #f39c12, #e74c3c);
-    }
-    
     /* Mobile Responsive */
     @media (max-width: 768px) {
       h1 {
@@ -253,12 +195,6 @@
       #searchBox {
         top: 70px;
         width: 90%;
-      }
-      
-      .legend {
-        bottom: 10px;
-        right: 10px;
-        font-size: 0.8em;
       }
     }
   </style>
@@ -276,21 +212,21 @@
     <div id="searchResults"></div>
   </div>
   
-  <!-- Legend -->
-  <div class="legend">
-    <h4>Membership Tiers</h4>
-    <div class="legend-item">
-      <div class="legend-color basic"></div>
-      <span>Basic Member</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color premium"></div>
-      <span>Premium Member</span>
-    </div>
-  </div>
+
   
   <!-- Map Container -->
   <div id="map"></div>
+  
+  <!-- FOR RESTAURANTS BUTTON - Set display to 'block' to show, 'none' to hide -->
+  <div id="restaurantCTA" style="display: block; position: absolute; bottom: 20px; right: 20px; z-index: 1000;">
+    <a href="restaurant-application.html" 
+       style="background: #2ecc71; color: white; padding: 12px 20px; 
+              border-radius: 8px; text-decoration: none; font-weight: bold; 
+              box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: inline-block;
+              font-size: 0.9em; transition: all 0.3s ease;">
+      🌱 List Your Restaurant
+    </a>
+  </div>
   
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -324,12 +260,8 @@
           // Create custom popup content
           var popupContent = '<div class="restaurant-popup">';
           
-          // Restaurant name with premium badge if applicable
-          if (props.subscription_tier === 'premium') {
-            popupContent += '<h3>' + props.name + ' <span class="premium-badge">⭐ Premium</span></h3>';
-          } else {
-            popupContent += '<h3>' + props.name + '</h3>';
-          }
+          // Restaurant name (same for all - no badge shown)
+          popupContent += '<h3>' + props.name + '</h3>';
           
           // Address
           popupContent += '<p><strong>Address:</strong> ' + props.address + '</p>';
@@ -354,18 +286,7 @@
             minWidth: 250
           });
           
-          // Customize marker based on tier
-          if (props.subscription_tier === 'premium') {
-            var premiumIcon = L.divIcon({
-              className: 'premium-marker',
-              html: '<i class="fa fa-star" style="color: #f39c12; font-size: 24px;"></i>',
-              iconSize: [30, 30],
-              iconAnchor: [15, 15]
-            });
-            layer.setIcon(premiumIcon);
-          }
-          
-          // Store marker for search
+          // Store marker for search (all markers look the same)
           allMarkers.push({
             layer: layer,
             name: props.name.toLowerCase(),
@@ -410,11 +331,7 @@
       
       results.forEach(function(result) {
         var resultHtml = '<div class="search-result-item" data-lat="' + result.layer.getLatLng().lat + '" data-lng="' + result.layer.getLatLng().lng + '">';
-        resultHtml += '<strong>' + result.properties.name;
-        if (result.properties.subscription_tier === 'premium') {
-          resultHtml += ' ⭐';
-        }
-        resultHtml += '</strong>';
+        resultHtml += '<strong>' + result.properties.name + '</strong>';
         resultHtml += '<small>' + result.properties.address + '</small>';
         resultHtml += '</div>';
         
