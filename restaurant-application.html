@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join Our Local Restaurant Directory</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      color: white;
+      padding: 40px 30px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      font-size: 1.2em;
+      opacity: 0.95;
+    }
+    
+    .content {
+      padding: 40px 30px;
+    }
+    
+    .pricing-section {
+      margin-bottom: 40px;
+    }
+    
+    .pricing-section h2 {
+      color: #2c3e50;
+      margin-bottom: 30px;
+      text-align: center;
+      font-size: 2em;
+    }
+    
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+    
+    .pricing-card {
+      border: 3px solid #ecf0f1;
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .pricing-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .pricing-card.premium {
+      border-color: #f39c12;
+      background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
+    }
+    
+    .pricing-card.premium .badge {
+      position: absolute;
+      top: -15px;
+      right: 20px;
+      background: linear-gradient(135deg, #f39c12, #e74c3c);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: bold;
+    }
+    
+    .pricing-card h3 {
+      color: #2c3e50;
+      font-size: 1.5em;
+      margin-bottom: 15px;
+    }
+    
+    .pricing-card .price {
+      font-size: 2.5em;
+      color: #2ecc71;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+    
+    .pricing-card .price small {
+      font-size: 0.4em;
+      color: #7f8c8d;
+      font-weight: normal;
+    }
+    
+    .pricing-card .savings {
+      background: #e74c3c;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+    
+    .pricing-card ul {
+      list-style: none;
+      margin: 20px 0;
+      text-align: left;
+    }
+    
+    .pricing-card ul li {
+      padding: 10px 0;
+      border-bottom: 1px solid #ecf0f1;
+    }
+    
+    .pricing-card ul li:before {
+      content: "✓ ";
+      color: #2ecc71;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    
+    .pricing-card .cta-button {
+      display: inline-block;
+      background: #3498db;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+    }
+    
+    .pricing-card.premium .cta-button {
+      background: linear-gradient(135deg, #f39c12, #e74c3c);
+    }
+    
+    .pricing-card .cta-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .benefits {
+      background: #f8f9fa;
+      padding: 30px;
+      border-radius: 12px;
+      margin: 40px 0;
+    }
+    
+    .benefits h3 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+    }
+    
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    
+    .benefit-item {
+      display: flex;
+      align-items: start;
+    }
+    
+    .benefit-item .icon {
+      font-size: 2em;
+      margin-right: 15px;
+    }
+    
+    .benefit-item .text h4 {
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+    
+    .benefit-item .text p {
+      color: #7f8c8d;
+      font-size: 0.95em;
+    }
+    
+    .application-section {
+      margin-top: 50px;
+      text-align: center;
+    }
+    
+    .application-section h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-size: 2em;
+    }
+    
+    .application-section p {
+      color: #7f8c8d;
+      margin-bottom: 30px;
+      font-size: 1.1em;
+    }
+    
+    .form-embed {
+      border: 2px solid #ecf0f1;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 30px;
+    }
+    
+    .footer {
+      background: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 30px;
+    }
+    
+    .footer p {
+      margin: 5px 0;
+    }
+    
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 1.8em;
+      }
+      
+      .header p {
+        font-size: 1em;
+      }
+      
+      .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .content {
+        padding: 20px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🌱 Join Our Local Restaurant Directory</h1>
+      <p>Connect with customers who care about local sourcing</p>
+    </div>
+    
+    <!-- Content -->
+    <div class="content">
+      
+      <!-- Pricing Section -->
+      <div class="pricing-section">
+        <h2>Choose Your Membership</h2>
+        
+        <div class="pricing-grid">
+          <!-- Basic Monthly -->
+          <div class="pricing-card">
+            <h3>Basic Monthly</h3>
+            <div class="price">$49<small>/month</small></div>
+            <ul>
+              <li>Map placement</li>
+              <li>Restaurant name & address</li>
+              <li>Local sourcing description</li>
+              <li>Search-optimized listing</li>
+            </ul>
+            <a href="YOUR_STRIPE_BASIC_MONTHLY_LINK" class="cta-button" target="_blank">Get Started</a>
+          </div>
+          
+          <!-- Basic Annual -->
+          <div class="pricing-card">
+            <h3>Basic Annual</h3>
+            <div class="savings">Save 15%</div>
+            <div class="price">$490<small>/year</small></div>
+            <ul>
+              <li>Map placement</li>
+              <li>Restaurant name & address</li>
+              <li>Local sourcing description</li>
+              <li>Search-optimized listing</li>
+              <li><strong>2 months FREE</strong></li>
+            </ul>
+            <a href="YOUR_STRIPE_BASIC_ANNUAL_LINK" class="cta-button" target="_blank">Get Started</a>
+          </div>
+          
+          <!-- Premium Monthly -->
+          <div class="pricing-card premium">
+            <span class="badge">⭐ PREMIUM</span>
+            <h3>Premium Monthly</h3>
+            <div class="price">$99<small>/month</small></div>
+            <ul>
+              <li><strong>Everything in Basic</strong></li>
+              <li>Premium badge on map</li>
+              <li>Monthly promotional coupon</li>
+              <li>Enhanced visibility</li>
+              <li>Priority support</li>
+            </ul>
+            <a href="YOUR_STRIPE_PREMIUM_MONTHLY_LINK" class="cta-button" target="_blank">Go Premium</a>
+          </div>
+          
+          <!-- Premium Annual -->
+          <div class="pricing-card premium">
+            <span class="badge">⭐ BEST VALUE</span>
+            <h3>Premium Annual</h3>
+            <div class="savings">Save 15%</div>
+            <div class="price">$990<small>/year</small></div>
+            <ul>
+              <li><strong>Everything in Basic</strong></li>
+              <li>Premium badge on map</li>
+              <li>Monthly promotional coupon</li>
+              <li>Enhanced visibility</li>
+              <li>Priority support</li>
+              <li><strong>2 months FREE</strong></li>
+            </ul>
+            <a href="YOUR_STRIPE_PREMIUM_ANNUAL_LINK" class="cta-button" target="_blank">Go Premium</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Benefits Section -->
+      <div class="benefits">
+        <h3>Why Join Our Directory?</h3>
+        <div class="benefits-grid">
+          <div class="benefit-item">
+            <div class="icon">🎯</div>
+            <div class="text">
+              <h4>Targeted Audience</h4>
+              <p>Reach customers actively seeking locally-sourced dining options</p>
+            </div>
+          </div>
+          
+          <div class="benefit-item">
+            <div class="icon">📱</div>
+            <div class="text">
+              <h4>Mobile-Friendly</h4>
+              <p>Your listing looks great on all devices</p>
+            </div>
+          </div>
+          
+          <div class="benefit-item">
+            <div class="icon">🔍</div>
+            <div class="text">
+              <h4>SEO Optimized</h4>
+              <p>Help customers find you through search engines</p>
+            </div>
+          </div>
+          
+          <div class="benefit-item">
+            <div class="icon">💰</div>
+            <div class="text">
+              <h4>Drive Traffic</h4>
+              <p>Premium coupons attract new customers monthly</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Application Section -->
+      <div class="application-section">
+        <h2>Ready to Get Started?</h2>
+        <p>Fill out the quick application below, then complete payment to get listed within 24 hours!</p>
+        
+        <!-- Embedded Google Form -->
+        <div class="form-embed">
+          <iframe 
+            src="YOUR_GOOGLE_FORM_EMBED_LINK_HERE" 
+            width="100%" 
+            height="1200" 
+            frameborder="0" 
+            marginheight="0" 
+            marginwidth="0">
+            Loading…
+          </iframe>
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+      <p><strong>Local Restaurant Directory</strong></p>
+      <p>Supporting restaurants committed to local sourcing</p>
+      <p>Questions? Email: your-email@example.com</p>
+    </div>
+  </div>
+  
+</body>
+</html>

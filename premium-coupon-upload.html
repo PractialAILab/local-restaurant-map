@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Your Monthly Coupon - Premium Members</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .container {
+      max-width: 700px;
+      width: 100%;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #f39c12, #e74c3c);
+      color: white;
+      padding: 40px 30px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    
+    .header .badge {
+      background: rgba(255,255,255,0.2);
+      padding: 5px 15px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+    
+    .content {
+      padding: 40px 30px;
+    }
+    
+    .info-box {
+      background: #f8f9fa;
+      border-left: 4px solid #3498db;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 5px;
+    }
+    
+    .info-box h3 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    
+    .info-box ul {
+      margin-left: 20px;
+      color: #555;
+    }
+    
+    .info-box li {
+      margin: 5px 0;
+    }
+    
+    .upload-section {
+      margin: 30px 0;
+    }
+    
+    .upload-section h3 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-group label {
+      display: block;
+      color: #2c3e50;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ecf0f1;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border 0.3s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+    
+    .file-upload-area {
+      border: 3px dashed #3498db;
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      background: #f8f9fa;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .file-upload-area:hover {
+      background: #ecf0f1;
+      border-color: #2980b9;
+    }
+    
+    .file-upload-area.dragover {
+      background: #d5e8f7;
+      border-color: #2980b9;
+    }
+    
+    .file-upload-area i {
+      font-size: 3em;
+      color: #3498db;
+      margin-bottom: 15px;
+    }
+    
+    .file-upload-area p {
+      color: #7f8c8d;
+      margin: 10px 0;
+    }
+    
+    .file-upload-area .file-types {
+      font-size: 0.85em;
+      color: #95a5a6;
+    }
+    
+    #fileInput {
+      display: none;
+    }
+    
+    .preview-section {
+      margin-top: 30px;
+      display: none;
+    }
+    
+    .preview-section.active {
+      display: block;
+    }
+    
+    .preview-container {
+      display: flex;
+      gap: 30px;
+      align-items: start;
+      flex-wrap: wrap;
+    }
+    
+    .preview-box {
+      flex: 1;
+      min-width: 250px;
+    }
+    
+    .preview-box h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    
+    .image-preview {
+      border: 2px solid #ecf0f1;
+      border-radius: 8px;
+      padding: 10px;
+      background: white;
+      text-align: center;
+    }
+    
+    .image-preview img {
+      max-width: 100%;
+      border-radius: 5px;
+    }
+    
+    .image-preview .dimensions {
+      margin-top: 10px;
+      font-size: 0.85em;
+      color: #7f8c8d;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 15px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      color: white;
+      flex: 1;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    }
+    
+    .btn-primary:disabled {
+      background: #95a5a6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-secondary {
+      background: #ecf0f1;
+      color: #2c3e50;
+    }
+    
+    .btn-secondary:hover {
+      background: #bdc3c7;
+    }
+    
+    .success-message {
+      background: #2ecc71;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      display: none;
+      text-align: center;
+    }
+    
+    .success-message.active {
+      display: block;
+    }
+    
+    .error-message {
+      background: #e74c3c;
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+    }
+    
+    .error-message.active {
+      display: block;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .loading.active {
+      display: block;
+    }
+    
+    .loading-spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .instructions {
+      background: #fff9e6;
+      border-left: 4px solid #f39c12;
+      padding: 20px;
+      margin: 30px 0;
+      border-radius: 5px;
+    }
+    
+    .instructions h4 {
+      color: #f39c12;
+      margin-bottom: 10px;
+    }
+    
+    .instructions ol {
+      margin-left: 20px;
+      color: #555;
+    }
+    
+    .instructions li {
+      margin: 8px 0;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px;
+      }
+      
+      .header h1 {
+        font-size: 1.5em;
+      }
+      
+      .content {
+        padding: 20px 15px;
+      }
+      
+      .preview-container {
+        flex-direction: column;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>⭐ Premium Member Coupon Upload</h1>
+      <div class="badge">Monthly Promotional Offer</div>
+    </div>
+    
+    <!-- Content -->
+    <div class="content">
+      
+      <!-- Info Box -->
+      <div class="info-box">
+        <h3>📋 Coupon Guidelines</h3>
+        <ul>
+          <li>Image will be automatically resized to <strong>256px × 256px</strong></li>
+          <li>Accepted formats: JPG, PNG, GIF</li>
+          <li>Maximum file size: 5MB</li>
+          <li>Make your offer clear and eye-catching!</li>
+          <li>One coupon per month - choose wisely</li>
+        </ul>
+      </div>
+      
+      <!-- Instructions -->
+      <div class="instructions">
+        <h4>💡 Creating Great Coupons</h4>
+        <ol>
+          <li>Use <strong>Canva.com</strong> (free) to design your coupon</li>
+          <li>Create a <strong>square image</strong> (1000px × 1000px works great)</li>
+          <li>Include your offer clearly: "20% OFF Dinner" or "Buy 1 Get 1 Free"</li>
+          <li>Add any restrictions: "Valid weekdays only" or "Dine-in only"</li>
+          <li>Upload here - we'll handle the rest!</li>
+        </ol>
+      </div>
+      
+      <!-- Form -->
+      <div class="upload-section">
+        <h3>Upload Your Coupon</h3>
+        
+        <form id="couponForm">
+          <div class="form-group">
+            <label for="restaurantName">Restaurant Name *</label>
+            <input type="text" id="restaurantName" required placeholder="Your restaurant name">
+          </div>
+          
+          <div class="form-group">
+            <label for="contactEmail">Contact Email *</label>
+            <input type="email" id="contactEmail" required placeholder="your@email.com">
+          </div>
+          
+          <div class="form-group">
+            <label for="couponMonth">Coupon Month *</label>
+            <select id="couponMonth" required>
+              <option value="">Select month...</option>
+              <option value="2025-02">February 2025</option>
+              <option value="2025-03">March 2025</option>
+              <option value="2025-04">April 2025</option>
+              <option value="2025-05">May 2025</option>
+              <option value="2025-06">June 2025</option>
+              <option value="2025-07">July 2025</option>
+              <option value="2025-08">August 2025</option>
+              <option value="2025-09">September 2025</option>
+              <option value="2025-10">October 2025</option>
+              <option value="2025-11">November 2025</option>
+              <option value="2025-12">December 2025</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Upload Coupon Image *</label>
+            <div class="file-upload-area" id="uploadArea">
+              <div style="font-size: 3em; margin-bottom: 15px;">📤</div>
+              <p><strong>Click to upload</strong> or drag and drop</p>
+              <p class="file-types">JPG, PNG, GIF (max 5MB)</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/jpeg,image/png,image/gif">
+          </div>
+          
+          <!-- Preview Section -->
+          <div class="preview-section" id="previewSection">
+            <h4 style="margin-bottom: 15px; color: #2c3e50;">Preview</h4>
+            <div class="preview-container">
+              <div class="preview-box">
+                <h4>Original Image</h4>
+                <div class="image-preview">
+                  <img id="originalPreview" alt="Original">
+                  <div class="dimensions" id="originalDimensions"></div>
+                </div>
+              </div>
+              <div class="preview-box">
+                <h4>Resized to 256×256 (What customers see)</h4>
+                <div class="image-preview">
+                  <canvas id="resizedCanvas" width="256" height="256"></canvas>
+                  <div class="dimensions">256 × 256 pixels</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Error Message -->
+          <div class="error-message" id="errorMessage"></div>
+          
+          <!-- Button Group -->
+          <div class="button-group">
+            <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel Upload</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Submit Coupon</button>
+          </div>
+        </form>
+        
+        <!-- Loading State -->
+        <div class="loading" id="loadingState">
+          <div class="loading-spinner"></div>
+          <p>Uploading your coupon...</p>
+        </div>
+        
+        <!-- Success Message -->
+        <div class="success-message" id="successMessage">
+          <h3>✅ Coupon Uploaded Successfully!</h3>
+          <p>Your coupon will appear on the map within 24 hours.</p>
+          <p>Check your email for confirmation.</p>
+        </div>
+        
+      </div>
+      
+    </div>
+  </div>
+  
+  <script>
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const previewSection = document.getElementById('previewSection');
+    const originalPreview = document.getElementById('originalPreview');
+    const originalDimensions = document.getElementById('originalDimensions');
+    const resizedCanvas = document.getElementById('resizedCanvas');
+    const submitBtn = document.getElementById('submitBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    const couponForm = document.getElementById('couponForm');
+    const loadingState = document.getElementById('loadingState');
+    const successMessage = document.getElementById('successMessage');
+    
+    let selectedFile = null;
+    let resizedImageBlob = null;
+    
+    // Click to upload
+    uploadArea.addEventListener('click', () => fileInput.click());
+    
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFile(files[0]);
+      }
+    });
+    
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFile(e.target.files[0]);
+      }
+    });
+    
+    // Handle file selection
+    function handleFile(file) {
+      // Validate file type
+      if (!file.type.match('image/(jpeg|png|gif)')) {
+        showError('Please upload a JPG, PNG, or GIF image.');
+        return;
+      }
+      
+      // Validate file size (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        showError('File size must be less than 5MB.');
+        return;
+      }
+      
+      selectedFile = file;
+      hideError();
+      processImage(file);
+    }
+    
+    // Process and resize image
+    function processImage(file) {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        const img = new Image();
+        
+        img.onload = () => {
+          // Show original
+          originalPreview.src = e.target.result;
+          originalDimensions.textContent = `${img.width} × ${img.height} pixels`;
+          
+          // Resize to 256x256
+          const ctx = resizedCanvas.getContext('2d');
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          
+          // Calculate scaling to cover the canvas while maintaining aspect ratio
+          const scale = Math.max(256 / img.width, 256 / img.height);
+          const scaledWidth = img.width * scale;
+          const scaledHeight = img.height * scale;
+          const offsetX = (256 - scaledWidth) / 2;
+          const offsetY = (256 - scaledHeight) / 2;
+          
+          ctx.clearRect(0, 0, 256, 256);
+          ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
+          
+          // Convert canvas to blob
+          resizedCanvas.toBlob((blob) => {
+            resizedImageBlob = blob;
+            previewSection.classList.add('active');
+            submitBtn.disabled = false;
+          }, 'image/jpeg', 0.9);
+        };
+        
+        img.src = e.target.result;
+      };
+      
+      reader.readAsDataURL(file);
+    }
+    
+    // Cancel upload
+    cancelBtn.addEventListener('click', () => {
+      fileInput.value = '';
+      selectedFile = null;
+      resizedImageBlob = null;
+      previewSection.classList.remove('active');
+      submitBtn.disabled = true;
+      hideError();
+    });
+    
+    // Form submission
+    couponForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const restaurantName = document.getElementById('restaurantName').value;
+      const contactEmail = document.getElementById('contactEmail').value;
+      const couponMonth = document.getElementById('couponMonth').value;
+      
+      if (!resizedImageBlob) {
+        showError('Please upload an image.');
+        return;
+      }
+      
+      // Show loading
+      couponForm.style.display = 'none';
+      loadingState.classList.add('active');
+      
+      // Create FormData
+      const formData = new FormData();
+      formData.append('restaurantName', restaurantName);
+      formData.append('contactEmail', contactEmail);
+      formData.append('couponMonth', couponMonth);
+      formData.append('couponImage', resizedImageBlob, `${restaurantName.replace(/\s+/g, '-')}-${couponMonth}.jpg`);
+      
+      // REPLACE THIS URL WITH YOUR GOOGLE FORM SUBMISSION ENDPOINT OR API
+      // For now, this simulates a successful upload
+      setTimeout(() => {
+        loadingState.classList.remove('active');
+        successMessage.classList.add('active');
+        
+        // In production, you'd actually submit to your backend/Google Form
+        console.log('Form data:', {
+          restaurantName,
+          contactEmail,
+          couponMonth,
+          imageBlob: resizedImageBlob
+        });
+      }, 2000);
+      
+      // ACTUAL IMPLEMENTATION WOULD BE:
+      // try {
+      //   const response = await fetch('YOUR_BACKEND_ENDPOINT', {
+      //     method: 'POST',
+      //     body: formData
+      //   });
+      //   
+      //   if (response.ok) {
+      //     loadingState.classList.remove('active');
+      //     successMessage.classList.add('active');
+      //   } else {
+      //     throw new Error('Upload failed');
+      //   }
+      // } catch (error) {
+      //   loadingState.classList.remove('active');
+      //   couponForm.style.display = 'block';
+      //   showError('Upload failed. Please try again or contact support.');
+      // }
+    });
+    
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.classList.add('active');
+    }
+    
+    function hideError() {
+      errorMessage.classList.remove('active');
+    }
+  </script>
+</body>
+</html>
