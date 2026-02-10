@@ -273,8 +273,8 @@
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
-  <!-- Omnivore for CSV loading -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-omnivore/0.3.4/leaflet-omnivore.min.js"></script>
+  <!-- Papa Parse for better CSV handling -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   
   <script>
     // Initialize the map
@@ -296,92 +296,78 @@
       document.getElementById('errorMessage').classList.add('show');
     }
     
-    // Load and display the restaurant data - DIAGNOSTIC VERSION
-    console.log('=== DIAGNOSTIC INFO ===');
-    console.log('Current page URL:', window.location.href);
-    console.log('Current domain:', window.location.hostname);
-    console.log('Attempting to load CSV from: assets/data/stores.csv');
-    console.log('Full URL will be:', window.location.origin + '/assets/data/stores.csv');
-    console.log('========================');
+    // Load CSV using Papa Parse (better than Omnivore for complex CSVs)
+    console.log('Loading restaurant data with Papa Parse...');
     
-    // Try to fetch the CSV directly first to see if it exists
-    fetch('/assets/data/stores.csv')
-      .then(response => {
-        console.log('CSV fetch response status:', response.status);
-        console.log('CSV fetch response OK:', response.ok);
-        if (!response.ok) {
-          console.error('❌ CSV file not accessible at /assets/data/stores.csv');
-          console.log('Trying relative path instead...');
-        }
-        return response.text();
-      })
-      .then(csvText => {
-        console.log('✅ CSV file accessible!');
-        console.log('CSV content preview (first 200 chars):', csvText.substring(0, 200));
-      })
-      .catch(error => {
-        console.error('❌ Error fetching CSV:', error);
-      });
-    
-    // Now try loading with Omnivore
-    var storesData = omnivore.csv('/assets/data/stores.csv')
-      .on('ready', function() {
-        console.log('✅ CSV loaded successfully! Processing restaurants...');
-        console.log('Number of restaurants loaded:', this.getLayers().length);
+    Papa.parse('/assets/data/stores.csv', {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: function(results) {
+        console.log('✅ CSV parsed successfully!');
+        console.log('Number of restaurants:', results.data.length);
+        console.log('Sample data:', results.data[0]);
         
-        // Process each restaurant
-        this.eachLayer(function(layer) {
-          var props = layer.feature.properties;
+        // Create markers for each restaurant
+        results.data.forEach(function(restaurant) {
+          // Skip if missing required fields
+          if (!restaurant.name || !restaurant.lat || !restaurant.lon) {
+            console.warn('Skipping invalid entry:', restaurant);
+            return;
+          }
           
-          // Create custom popup content
+          var lat = parseFloat(restaurant.lat);
+          var lon = parseFloat(restaurant.lon);
+          
+          // Create marker
+          var marker = L.marker([lat, lon]).addTo(markersLayer);
+          
+          // Create popup content
           var popupContent = '<div class="restaurant-popup">';
+          popupContent += '<h3>' + restaurant.name + '</h3>';
+          popupContent += '<p><strong>Address:</strong> ' + restaurant.address + '</p>';
+          popupContent += '<p><strong>Local Sourcing:</strong> ' + restaurant.products + '</p>';
           
-          // Restaurant name
-          popupContent += '<h3>' + props.name + '</h3>';
-          
-          // Address
-          popupContent += '<p><strong>Address:</strong> ' + props.address + '</p>';
-          
-          // Local sourcing info
-          popupContent += '<p><strong>Local Sourcing:</strong> ' + props.products + '</p>';
-          
-          // Coupon section (only for premium with valid coupon URL)
-          if (props.subscription_tier === 'premium' && props.direct_image_url && props.direct_image_url.trim() !== '') {
+          // Add coupon section for premium restaurants
+          if (restaurant.subscription_tier === 'premium' && restaurant.direct_image_url && restaurant.direct_image_url.trim() !== '') {
             popupContent += '<div class="coupon-section">';
             popupContent += '<p>💰 Current Special Offer:</p>';
-            popupContent += '<img src="' + props.direct_image_url + '" alt="Special Coupon Offer" onclick="window.open(this.src, \'_blank\')">';
+            popupContent += '<img src="' + restaurant.direct_image_url + '" alt="Special Coupon Offer" onclick="window.open(this.src, \'_blank\')">';
             popupContent += '<small style="display: block; margin-top: 5px; color: #7f8c8d;">Click image to view full size</small>';
             popupContent += '</div>';
           }
           
           popupContent += '</div>';
           
-          // Bind popup to marker
-          layer.bindPopup(popupContent, {
+          marker.bindPopup(popupContent, {
             maxWidth: 400,
             minWidth: 250
           });
           
-          // Store marker for search
+          // Store for search
           allMarkers.push({
-            layer: layer,
-            name: props.name.toLowerCase(),
-            address: props.address.toLowerCase(),
-            properties: props
+            layer: marker,
+            name: restaurant.name.toLowerCase(),
+            address: restaurant.address.toLowerCase(),
+            properties: restaurant
           });
         });
         
         // Fit map to show all markers
         if (allMarkers.length > 0) {
-          map.fitBounds(markersLayer.getBounds(), { padding: [50, 50] });
+          var group = new L.featureGroup(allMarkers.map(m => m.layer));
+          map.fitBounds(group.getBounds(), { padding: [50, 50] });
           console.log('✅ Map centered on all restaurants');
+        } else {
+          console.error('❌ No valid restaurants found in CSV');
+          showError('No restaurant data found. Please check the CSV file.');
         }
-      })
-      .on('error', function(error) {
-        console.error('❌ Error loading CSV:', error);
-        showError('Unable to load restaurant data. Please contact support.');
-      })
-      .addTo(markersLayer);
+      },
+      error: function(error) {
+        console.error('❌ Error parsing CSV:', error);
+        showError('Unable to load restaurant data: ' + error.message);
+      }
+    });
     
     // Search functionality
     $('#searchIcon').click(function() {
