@@ -296,9 +296,34 @@
       document.getElementById('errorMessage').classList.add('show');
     }
     
-    // Load and display the restaurant data - SIMPLE VERSION THAT WORKS
-    console.log('Loading restaurant data from CSV...');
+    // Load and display the restaurant data - DIAGNOSTIC VERSION
+    console.log('=== DIAGNOSTIC INFO ===');
+    console.log('Current page URL:', window.location.href);
+    console.log('Current domain:', window.location.hostname);
+    console.log('Attempting to load CSV from: assets/data/stores.csv');
+    console.log('Full URL will be:', window.location.origin + '/assets/data/stores.csv');
+    console.log('========================');
     
+    // Try to fetch the CSV directly first to see if it exists
+    fetch('/assets/data/stores.csv')
+      .then(response => {
+        console.log('CSV fetch response status:', response.status);
+        console.log('CSV fetch response OK:', response.ok);
+        if (!response.ok) {
+          console.error('❌ CSV file not accessible at /assets/data/stores.csv');
+          console.log('Trying relative path instead...');
+        }
+        return response.text();
+      })
+      .then(csvText => {
+        console.log('✅ CSV file accessible!');
+        console.log('CSV content preview (first 200 chars):', csvText.substring(0, 200));
+      })
+      .catch(error => {
+        console.error('❌ Error fetching CSV:', error);
+      });
+    
+    // Now try loading with Omnivore
     var storesData = omnivore.csv('/assets/data/stores.csv')
       .on('ready', function() {
         console.log('✅ CSV loaded successfully! Processing restaurants...');
