@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -339,9 +339,7 @@
             console.log('Coupon URL:', restaurant.direct_image_url);
             
             popupContent += '<div class="coupon-section">';
-            popupContent += '<p>💰 Current Special Offer:</p>';
-            popupContent += '<img src="' + restaurant.direct_image_url + '" alt="Special Coupon Offer" onclick="window.open(this.src, \'_blank\')" onerror="console.error(\'Failed to load coupon image:\', this.src)">';
-            popupContent += '<small style="display: block; margin-top: 5px; color: #7f8c8d;">Click image to view full size</small>';
+            popupContent += '<p style="margin: 0;">💰 <a href="' + restaurant.direct_image_url + '" target="_blank" style="color: #2ecc71; text-decoration: underline; font-weight: bold;">View Current Special Offer</a></p>';
             popupContent += '</div>';
           } else {
             console.log('Not premium or no coupon URL:', restaurant.name, restaurant.subscription_tier, restaurant.direct_image_url);
