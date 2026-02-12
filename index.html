@@ -3,20 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Better Source - Restaurant Supply Insight</title>
-  
-  <!-- Favicon -->
+  <title>Better Source - Find Restaurants Committed to Local Sourcing</title>
+  <meta name="description" content="Discover restaurants in your area that prioritize local sourcing. Support community-focused dining and local farmers.">
   <link rel="icon" type="image/png" href="/assets/icons/BS32x32logo.png">
-  
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  
-  <!-- jQuery -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   
   <style>
     * {
@@ -27,578 +16,569 @@
     
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
+      line-height: 1.6;
+      color: #333;
     }
     
-    /* Sidebar Layout */
-    #sidebar {
-      width: 400px;
-      height: 100vh;
-      background: #f8f9fa;
-      overflow-y: auto;
-      border-right: 2px solid #dee2e6;
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      color: white;
+      padding: 20px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
       z-index: 100;
     }
     
-    #map-container {
-      flex: 1;
-      height: 100vh;
-      position: relative;
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     
-    #map {
-      width: 100%;
-      height: 100%;
-    }
-    
-    /* Header in Sidebar */
-    #header {
-      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    
-    #header img {
-      height: 40px;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-    
-    #header h1 {
-      font-size: 1.3em;
-      color: white;
-      display: inline;
-      vertical-align: middle;
-    }
-    
-    /* Search Box in Sidebar */
-    #search-container {
-      padding: 15px;
-      background: white;
-      border-bottom: 1px solid #dee2e6;
-    }
-    
-    #searchInput {
-      width: 100%;
-      padding: 10px 15px;
-      border: 2px solid #2ecc71;
-      border-radius: 25px;
-      font-size: 0.95em;
-    }
-    
-    #searchInput:focus {
-      outline: none;
-      border-color: #27ae60;
-    }
-    
-    /* Restaurant List */
-    #restaurant-list {
-      padding: 10px;
-    }
-    
-    .restaurant-card {
-      background: white;
-      margin-bottom: 15px;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border-left: 4px solid #ddd;
-    }
-    
-    .restaurant-card:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      transform: translateY(-2px);
-    }
-    
-    .restaurant-card.selected {
-      border-left-color: #2ecc71;
-      background: #f0f9f4;
-    }
-    
-    /* Ranking Badge */
-    .ranking-badge {
-      display: inline-block;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      margin-right: 10px;
-      vertical-align: middle;
-      border: 3px solid #fff !important;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
-      flex-shrink: 0;
-      position: relative;
-    }
-    
-    /* Force colors with maximum specificity */
-    span.ranking-badge.ranking-high {
-      background-color: #2ecc71 !important;
-      background: #2ecc71 !important;
-    }
-    
-    span.ranking-badge.ranking-medium {
-      background-color: #f39c12 !important;
-      background: #f39c12 !important;
-    }
-    
-    span.ranking-badge.ranking-basic {
-      background-color: #e74c3c !important;
-      background: #e74c3c !important;
-    }
-    
-    .restaurant-card h3 {
-      font-size: 1.1em;
-      color: #2c3e50;
-      margin-bottom: 8px;
+    .logo-section {
       display: flex;
       align-items: center;
     }
     
-    .restaurant-card p {
-      margin: 5px 0;
-      color: #555;
-      font-size: 0.9em;
+    .logo-section img {
+      height: 40px;
+      margin-right: 15px;
     }
     
-    .restaurant-card p strong {
-      color: #2c3e50;
+    .logo-section h1 {
+      font-size: 1.5em;
     }
     
-    /* Category Badges */
-    .category-container {
-      margin-top: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-    }
-    
-    .category-badge {
-      display: inline-block;
-      padding: 3px 8px;
-      background: #2ecc71;
-      color: white;
-      border-radius: 12px;
-      font-size: 0.75em;
-      font-weight: bold;
-    }
-    
-    /* Coupon Indicator */
-    .coupon-indicator {
-      display: inline-block;
-      padding: 4px 10px;
-      background: #f39c12;
-      color: white;
-      border-radius: 15px;
-      font-size: 0.8em;
-      font-weight: bold;
-      margin-top: 8px;
-    }
-    
-    .coupon-link {
+    nav a {
       color: white;
       text-decoration: none;
-      font-weight: bold;
+      margin-left: 25px;
+      font-weight: 500;
+      transition: opacity 0.3s;
     }
     
-    .coupon-link:hover {
-      text-decoration: underline;
+    nav a:hover {
+      opacity: 0.8;
     }
     
-    /* Phone and Hours */
-    .contact-info {
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid #ecf0f1;
-    }
-    
-    .contact-info a {
-      color: #3498db;
-      text-decoration: none;
-    }
-    
-    .contact-info a:hover {
-      text-decoration: underline;
-    }
-    
-    /* Empty State */
-    .empty-state {
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      color: white;
+      padding: 120px 20px 100px;
       text-align: center;
-      padding: 40px 20px;
-      color: #7f8c8d;
     }
     
-    .empty-state i {
+    .hero h2 {
       font-size: 3em;
-      margin-bottom: 15px;
-      opacity: 0.5;
+      margin-bottom: 25px;
+      font-weight: 700;
     }
     
-    /* FOR RESTAURANTS BUTTON */
-    #restaurantCTA {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      z-index: 1000;
+    .hero p {
+      font-size: 1.4em;
+      max-width: 800px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
     }
     
-    #restaurantCTA a {
-      background: #2ecc71;
-      color: white;
-      padding: 12px 20px;
+    .hero-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 18px 45px;
       border-radius: 8px;
       text-decoration: none;
       font-weight: bold;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      display: inline-block;
-      font-size: 0.9em;
-      transition: all 0.3s ease;
+      font-size: 1.1em;
+      transition: all 0.3s;
     }
     
-    #restaurantCTA a:hover {
-      background: #27ae60;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    .btn-primary {
+      background: white;
+      color: #2ecc71;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
     
-    /* Loading State */
-    .loading {
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+    
+    .btn-secondary {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+    
+    .btn-secondary:hover {
+      background: white;
+      color: #2ecc71;
+    }
+    
+    /* Features Section */
+    .features {
+      max-width: 1200px;
+      margin: 80px auto;
+      padding: 0 20px;
+    }
+    
+    .section-header {
       text-align: center;
-      padding: 40px;
+      margin-bottom: 60px;
+    }
+    
+    .section-header h2 {
+      font-size: 2.5em;
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+    
+    .section-header p {
+      font-size: 1.2em;
       color: #7f8c8d;
+      max-width: 700px;
+      margin: 0 auto;
     }
     
-    .loading i {
-      font-size: 2em;
-      animation: spin 1s linear infinite;
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
     }
     
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .feature-card {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+      text-align: center;
+      transition: all 0.3s;
     }
     
-    /* Mobile Responsive */
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    }
+    
+    .feature-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+    }
+    
+    .feature-card h3 {
+      color: #2ecc71;
+      font-size: 1.5em;
+      margin-bottom: 15px;
+    }
+    
+    .feature-card p {
+      font-size: 1.1em;
+      line-height: 1.7;
+      color: #555;
+    }
+    
+    /* How It Works */
+    .how-it-works {
+      background: #f8f9fa;
+      padding: 80px 20px;
+    }
+    
+    .steps {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+    }
+    
+    .step {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .step-number {
+      width: 60px;
+      height: 60px;
+      background: #2ecc71;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8em;
+      font-weight: bold;
+      margin: 0 auto 20px;
+    }
+    
+    .step h3 {
+      color: #2c3e50;
+      font-size: 1.3em;
+      margin-bottom: 15px;
+    }
+    
+    .step p {
+      color: #555;
+      line-height: 1.7;
+    }
+    
+    /* Badge Explanation */
+    .badges-section {
+      max-width: 1000px;
+      margin: 80px auto;
+      padding: 0 20px;
+    }
+    
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+    
+    .badge-card {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .badge-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 4px solid white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      flex-shrink: 0;
+    }
+    
+    .badge-green {
+      background: #2ecc71;
+    }
+    
+    .badge-orange {
+      background: #f39c12;
+    }
+    
+    .badge-red {
+      background: #e74c3c;
+    }
+    
+    .badge-info h4 {
+      color: #2c3e50;
+      margin-bottom: 5px;
+      font-size: 1.2em;
+    }
+    
+    .badge-info p {
+      color: #555;
+      font-size: 0.95em;
+    }
+    
+    /* CTA Section */
+    .cta {
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      color: white;
+      padding: 100px 20px;
+      text-align: center;
+    }
+    
+    .cta h2 {
+      font-size: 2.8em;
+      margin-bottom: 25px;
+    }
+    
+    .cta p {
+      font-size: 1.3em;
+      margin-bottom: 40px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    /* Footer */
+    footer {
+      background: #2c3e50;
+      color: white;
+      padding: 40px 20px;
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+    }
+    
+    .footer-section h3 {
+      margin-bottom: 20px;
+      color: #2ecc71;
+    }
+    
+    .footer-section ul {
+      list-style: none;
+    }
+    
+    .footer-section ul li {
+      margin-bottom: 10px;
+    }
+    
+    .footer-section a {
+      color: white;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-section a:hover {
+      color: #2ecc71;
+    }
+    
+    .footer-bottom {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    /* Mobile */
     @media (max-width: 768px) {
-      body {
+      .header-content {
         flex-direction: column;
+        text-align: center;
       }
       
-      #sidebar {
-        width: 100%;
-        height: 50vh;
-        border-right: none;
-        border-bottom: 2px solid #dee2e6;
+      nav {
+        margin-top: 15px;
       }
       
-      #map-container {
-        height: 50vh;
+      nav a {
+        margin: 0 10px;
+        font-size: 0.9em;
       }
       
-      #header h1 {
+      .hero h2 {
+        font-size: 2em;
+      }
+      
+      .hero p {
         font-size: 1.1em;
       }
       
-      .restaurant-card {
-        padding: 12px;
+      .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn {
+        width: 100%;
+        max-width: 300px;
       }
     }
   </style>
 </head>
 <body>
   
-  <!-- Sidebar -->
-  <div id="sidebar">
-    <!-- Header -->
-    <div id="header">
-      <img src="/assets/icons/BS32x32logo.png" alt="Better Source Logo">
-      <h1>Better Source</h1>
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="logo-section">
+        <img src="/assets/icons/BS32x32logo.png" alt="Better Source Logo">
+        <h1>Better Source</h1>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="for-restaurants.html">For Restaurants</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+  
+  <!-- Hero -->
+  <section class="hero">
+    <h2>Discover Restaurants Committed to Local Sourcing</h2>
+    <p>Find and support restaurants that prioritize local ingredients, sustainable practices, and community partnerships.</p>
+    <div class="hero-buttons">
+      <a href="map.html" class="btn btn-primary">Explore the Map</a>
+      <a href="for-restaurants.html" class="btn btn-secondary">I'm a Restaurant Owner</a>
+    </div>
+  </section>
+  
+  <!-- Features -->
+  <section class="features">
+    <div class="section-header">
+      <h2>Why Better Source?</h2>
+      <p>Connecting conscious diners with restaurants making a difference</p>
     </div>
     
-    <!-- Search -->
-    <div id="search-container">
-      <input type="text" id="searchInput" placeholder="🔍 Search restaurants...">
-    </div>
-    
-    <!-- Restaurant List -->
-    <div id="restaurant-list">
-      <div class="loading">
-        <i class="fa fa-spinner"></i>
-        <p>Loading restaurants...</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🗺️</div>
+        <h3>Interactive Map</h3>
+        <p>Easily find local-sourcing restaurants in your area with our searchable, interactive map.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">✓</div>
+        <h3>Verified Commitments</h3>
+        <p>Every restaurant is vetted to ensure their local sourcing claims are authentic and current.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🌱</div>
+        <h3>Support Local</h3>
+        <p>Your dining choices support local farmers, ranchers, and producers in your community.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Clear Rankings</h3>
+        <p>Color-coded badges show the percentage of each restaurant's menu sourced locally.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3>Exclusive Offers</h3>
+        <p>Premium restaurants share monthly coupons and special promotions with our community.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🤝</div>
+        <h3>Community Focused</h3>
+        <p>Join a movement of diners and restaurants building stronger, more sustainable food systems.</p>
       </div>
     </div>
-  </div>
+  </section>
   
-  <!-- Map Container -->
-  <div id="map-container">
-    <div id="map"></div>
-    
-    <!-- FOR RESTAURANTS BUTTON -->
-    <div id="restaurantCTA">
-      <a href="restaurant-application.html">
-        🌱 List Your Restaurant
-      </a>
+  <!-- How It Works -->
+  <section class="how-it-works">
+    <div class="section-header">
+      <h2>How It Works</h2>
+      <p>Finding local-sourcing restaurants is simple</p>
     </div>
-  </div>
+    
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Open the Map</h3>
+        <p>Browse restaurants in your area committed to local sourcing.</p>
+      </div>
+      
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Check the Badge</h3>
+        <p>See what percentage of their menu is sourced locally with color-coded badges.</p>
+      </div>
+      
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Explore Details</h3>
+        <p>Click any restaurant to see what categories they source locally and contact information.</p>
+      </div>
+      
+      <div class="step">
+        <div class="step-number">4</div>
+        <h3>Dine & Support</h3>
+        <p>Visit the restaurant and enjoy fresh, local food while supporting your community.</p>
+      </div>
+    </div>
+  </section>
   
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Badge Explanation -->
+  <section class="badges-section">
+    <div class="section-header">
+      <h2>Understanding Our Badges</h2>
+      <p>Each restaurant displays a colored badge showing their local sourcing commitment</p>
+    </div>
+    
+    <div class="badge-grid">
+      <div class="badge-card">
+        <div class="badge-circle badge-green"></div>
+        <div class="badge-info">
+          <h4>Green Badge</h4>
+          <p>75%+ of menu sourced locally. Excellent commitment to local food systems.</p>
+        </div>
+      </div>
+      
+      <div class="badge-card">
+        <div class="badge-circle badge-orange"></div>
+        <div class="badge-info">
+          <h4>Orange Badge</h4>
+          <p>50-74% of menu sourced locally. Good commitment with room to grow.</p>
+        </div>
+      </div>
+      
+      <div class="badge-card">
+        <div class="badge-circle badge-red"></div>
+        <div class="badge-info">
+          <h4>Red Badge</h4>
+          <p>Up to 49% of menu sourced locally. Making strides toward local sourcing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
   
-  <!-- Papa Parse for CSV -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <!-- CTA -->
+  <section class="cta">
+    <h2>Ready to Find Great Local Food?</h2>
+    <p>Explore our map to discover restaurants making a difference in your community.</p>
+    <a href="map.html" class="btn btn-primary">Explore the Map Now</a>
+  </section>
   
-  <script>
-    // Wait for all libraries to load
-    window.addEventListener('load', function() {
-      initMap();
-    });
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Better Source</h3>
+        <p>Connecting conscious diners with restaurants committed to local sourcing and sustainable practices.</p>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="for-restaurants.html">For Restaurants</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="map.html">View Map</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h3>For Restaurants</h3>
+        <ul>
+          <li><a href="for-restaurants.html">Pricing & Plans</a></li>
+          <li><a href="for-restaurants.html#faq">FAQ</a></li>
+          <li><a href="for-restaurants.html">Apply Now</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Connect</h3>
+        <p>Email: <a href="mailto:practicalailabs@gmail.com">practicalailabs@gmail.com</a></p>
+      </div>
+    </div>
     
-    function initMap() {
-      // Initialize the map
-      var map = L.map('map').setView([39.7392, -104.9903], 11);
-    
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxZoom: 19
-    }).addTo(map);
-    
-    // Store all restaurants and markers
-    var allRestaurants = [];
-    var markersLayer = L.layerGroup().addTo(map);
-    var currentMarker = null;
-    
-    // Category labels for display
-    var categoryLabels = {
-      beef: 'Beef',
-      pork: 'Pork',
-      chicken: 'Chicken',
-      seafood: 'Seafood',
-      breads: 'Breads',
-      produce: 'Produce',
-      dairy: 'Dairy',
-      desserts: 'Desserts',
-      appetizers: 'Appetizers'
-    };
-    
-    // Function to calculate percentage from local_score
-    function calculatePercentage(restaurant) {
-      // Try to get local_score (column S)
-      var score = parseFloat(restaurant.local_score) || 0;
-      
-      // Calculate percentage: (score / 9 categories) * 100
-      var percentage = Math.round((score / 9) * 100);
-      
-      return percentage;
-    }
-    
-    // Function to get ranking badge HTML based on percentage
-    function getRankingBadge(restaurant) {
-      var percentage = calculatePercentage(restaurant);
-      
-      // Determine badge class based on percentage
-      var badgeClass = 'ranking-basic';
-      var badgeText = 'Basic';
-      
-      if (percentage >= 75) {
-        badgeClass = 'ranking-high';
-        badgeText = 'Excellent';
-      } else if (percentage >= 50) {
-        badgeClass = 'ranking-medium';
-        badgeText = 'Good';
-      }
-      
-      var title = badgeText + ' Local Sourcing (' + percentage + '% of menu is local)';
-      
-      return '<span class="ranking-badge ' + badgeClass + '" title="' + title + '"></span>';
-    }
-    
-    // Function to get category badges HTML
-    function getCategoryBadges(restaurant) {
-      var badges = '';
-      var categories = ['beef', 'pork', 'chicken', 'seafood', 'breads', 'produce', 'dairy', 'desserts', 'appetizers'];
-      
-      categories.forEach(function(cat) {
-        if (restaurant[cat] && restaurant[cat].toLowerCase() === 'yes') {
-          badges += '<span class="category-badge">' + categoryLabels[cat] + '</span>';
-        }
-      });
-      
-      return badges ? '<div class="category-container">' + badges + '</div>' : '';
-    }
-    
-    // Function to create restaurant card HTML
-    function createRestaurantCard(restaurant, index) {
-      var rankingBadge = getRankingBadge(restaurant);
-      var categoryBadges = getCategoryBadges(restaurant);
-      
-      var html = '<div class="restaurant-card" data-index="' + index + '">';
-      html += '<h3>' + rankingBadge + restaurant.name + '</h3>';
-      html += '<p><strong>📍</strong> ' + restaurant.address + '</p>';
-      
-      // Contact Info
-      if (restaurant.phone || restaurant.hours) {
-        html += '<div class="contact-info">';
-        if (restaurant.phone) {
-          html += '<p><strong>📞</strong> <a href="tel:' + restaurant.phone.replace(/[^0-9]/g, '') + '">' + restaurant.phone + '</a></p>';
-        }
-        if (restaurant.hours) {
-          html += '<p><strong>🕒</strong> ' + restaurant.hours + '</p>';
-        }
-        html += '</div>';
-      }
-      
-      // Category badges
-      html += categoryBadges;
-      
-      // Coupon indicator
-      if (restaurant.subscription_tier === 'premium' && restaurant.direct_image_url && restaurant.direct_image_url.trim() !== '') {
-        html += '<div class="coupon-indicator">💰 <a href="' + restaurant.direct_image_url + '" target="_blank" class="coupon-link">Special Offer Available</a></div>';
-      }
-      
-      html += '</div>';
-      return html;
-    }
-    
-    // Load CSV with cache-busting to force reload
-    var csvUrl = '/assets/data/stores.csv?v=' + new Date().getTime();
-    
-    Papa.parse(csvUrl, {
-      download: true,
-      header: true,
-      skipEmptyLines: 'greedy',
-      delimiter: ',',
-      newline: '',
-      quoteChar: '"',
-      escapeChar: '"',
-      transformHeader: function(header) {
-        return header.trim();
-      },
-      complete: function(results) {
-        console.log('CSV loaded successfully');
-        console.log('Total restaurants:', results.data.length);
-        console.log('Columns:', results.meta.fields);
-        
-        if (results.data.length === 0) {
-          $('#restaurant-list').html('<div class="empty-state"><i class="fa fa-exclamation-circle"></i><p>No restaurants found.</p></div>');
-          return;
-        }
-        
-        // Clear loading state
-        $('#restaurant-list').empty();
-        
-        // Process each restaurant
-        results.data.forEach(function(restaurant, index) {
-          // Skip if missing required fields
-          if (!restaurant.name || !restaurant.lat || !restaurant.lon) {
-            console.warn('Skipping invalid entry:', restaurant.name);
-            return;
-          }
-          
-          var lat = parseFloat(restaurant.lat);
-          var lon = parseFloat(restaurant.lon);
-          
-          // Store restaurant
-          allRestaurants.push({
-            data: restaurant,
-            lat: lat,
-            lon: lon,
-            marker: null
-          });
-          
-          // Create marker
-          var marker = L.marker([lat, lon]).addTo(markersLayer);
-          allRestaurants[allRestaurants.length - 1].marker = marker;
-          
-          // Create popup
-          var rankingBadge = getRankingBadge(restaurant);
-          
-          var popupContent = '<div style="min-width: 200px;">';
-          popupContent += '<h3 style="margin-bottom: 8px; display: flex; align-items: center;">' + rankingBadge + restaurant.name + '</h3>';
-          popupContent += '<p style="margin: 4px 0;"><strong>📍</strong> ' + restaurant.address + '</p>';
-          if (restaurant.phone) {
-            popupContent += '<p style="margin: 4px 0;"><strong>📞</strong> ' + restaurant.phone + '</p>';
-          }
-          popupContent += '</div>';
-          
-          marker.bindPopup(popupContent);
-          
-          // Add to sidebar
-          var cardHtml = createRestaurantCard(restaurant, allRestaurants.length - 1);
-          $('#restaurant-list').append(cardHtml);
-        });
-        
-        // Fit map to show all markers
-        if (allRestaurants.length > 0) {
-          var group = new L.featureGroup(allRestaurants.map(r => r.marker));
-          map.fitBounds(group.getBounds(), { padding: [50, 50] });
-        }
-      },
-      error: function(error) {
-        console.error('Error parsing CSV:', error);
-        $('#restaurant-list').html('<div class="empty-state"><i class="fa fa-exclamation-circle"></i><p>Error loading restaurant data.</p></div>');
-      }
-    });
-    
-    // Handle restaurant card clicks
-    $(document).on('click', '.restaurant-card', function() {
-      var index = $(this).data('index');
-      var restaurant = allRestaurants[index];
-      
-      // Update selected state
-      $('.restaurant-card').removeClass('selected');
-      $(this).addClass('selected');
-      
-      // Zoom to marker and open popup
-      map.setView([restaurant.lat, restaurant.lon], 15);
-      restaurant.marker.openPopup();
-      
-      // Scroll card into view if needed
-      $(this)[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    });
-    
-    // Search functionality
-    $('#searchInput').on('input', function() {
-      var searchTerm = $(this).val().toLowerCase();
-      
-      if (searchTerm.length === 0) {
-        // Show all restaurants
-        $('.restaurant-card').show();
-        return;
-      }
-      
-      // Filter restaurants
-      $('.restaurant-card').each(function() {
-        var index = $(this).data('index');
-        var restaurant = allRestaurants[index].data;
-        
-        // Build searchable text
-        var searchable = (
-          restaurant.name.toLowerCase() + ' ' +
-          restaurant.address.toLowerCase() + ' ' +
-          (restaurant.products || '').toLowerCase() + ' ' +
-          (restaurant.phone || '').toLowerCase()
-        );
-        
-        // Add category names to search
-        var categories = ['beef', 'pork', 'chicken', 'seafood', 'breads', 'produce', 'dairy', 'desserts', 'appetizers'];
-        categories.forEach(function(cat) {
-          if (restaurant[cat] && restaurant[cat].toLowerCase() === 'yes') {
-            searchable += ' ' + categoryLabels[cat].toLowerCase();
-          }
-        });
-        
-        if (searchable.includes(searchTerm)) {
-          $(this).show();
-        } else {
-          $(this).hide();
-        }
-      });
-    });
-    } // End of initMap function
-  </script>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Better Source - Restaurant Supply Insight. All rights reserved.</p>
+    </div>
+  </footer>
+  
 </body>
 </html>
