@@ -382,6 +382,11 @@
     function getRankingBadge(restaurant) {
       var percentage = parseFloat(restaurant.local_percentage) || 0;
       
+      // Debug logging
+      console.log('Restaurant:', restaurant.name);
+      console.log('  local_percentage value:', restaurant.local_percentage);
+      console.log('  parsed percentage:', percentage);
+      
       if (percentage >= 75) {
         return '<span class="ranking-badge ranking-high" title="Excellent Local Sourcing (' + percentage + '% of menu is local)"></span>';
       } else if (percentage >= 50) {
@@ -573,6 +578,10 @@
         }
       });
     });
+    } // End of initMap function
+  </script>
+</body>
+</html>
     } // End of initMap function
   </script>
 </body>
