@@ -384,20 +384,20 @@
       appetizers: 'Appetizers'
     };
     
+    // Function to calculate percentage from local_score
+    function calculatePercentage(restaurant) {
+      // Try to get local_score (column S)
+      var score = parseFloat(restaurant.local_score) || 0;
+      
+      // Calculate percentage: (score / 9 categories) * 100
+      var percentage = Math.round((score / 9) * 100);
+      
+      return percentage;
+    }
+    
     // Function to get ranking badge HTML based on percentage
     function getRankingBadge(restaurant) {
-      // CRITICAL FIX: Added "restaurant." prefix
-      var rawValue = restaurant.local_percentage;
-      
-      // Convert to string and clean it
-      var valueStr = String(rawValue || '0');
-      var cleanStr = valueStr.replace(/[%\s]/g, '').trim();
-      var percentage = parseFloat(cleanStr);
-      
-      // Handle NaN or invalid values
-      if (isNaN(percentage)) {
-        percentage = 0;
-      }
+      var percentage = calculatePercentage(restaurant);
       
       // Determine badge class based on percentage
       var badgeClass = 'ranking-basic';
@@ -463,8 +463,10 @@
       return html;
     }
     
-    // Load CSV and populate
-    Papa.parse('/assets/data/stores.csv', {
+    // Load CSV with cache-busting to force reload
+    var csvUrl = '/assets/data/stores.csv?v=' + new Date().getTime();
+    
+    Papa.parse(csvUrl, {
       download: true,
       header: true,
       skipEmptyLines: 'greedy',
@@ -476,6 +478,10 @@
         return header.trim();
       },
       complete: function(results) {
+        console.log('CSV loaded successfully');
+        console.log('Total restaurants:', results.data.length);
+        console.log('Columns:', results.meta.fields);
+        
         if (results.data.length === 0) {
           $('#restaurant-list').html('<div class="empty-state"><i class="fa fa-exclamation-circle"></i><p>No restaurants found.</p></div>');
           return;
@@ -488,6 +494,7 @@
         results.data.forEach(function(restaurant, index) {
           // Skip if missing required fields
           if (!restaurant.name || !restaurant.lat || !restaurant.lon) {
+            console.warn('Skipping invalid entry:', restaurant.name);
             return;
           }
           
