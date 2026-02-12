@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSV Diagnostic Tool</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 20px;
+      background: #1e1e1e;
+      color: #00ff00;
+    }
+    h1 {
+      color: #00ff00;
+    }
+    .section {
+      background: #2d2d2d;
+      padding: 15px;
+      margin: 20px 0;
+      border: 2px solid #00ff00;
+      border-radius: 5px;
+    }
+    .error {
+      color: #ff0000;
+    }
+    .success {
+      color: #00ff00;
+    }
+    .warning {
+      color: #ffaa00;
+    }
+    pre {
+      background: #000;
+      padding: 10px;
+      overflow-x: auto;
+      color: #00ff00;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #00ff00;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #003300;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 CSV DIAGNOSTIC TOOL</h1>
+  <p>This will show you EXACTLY what's in your stores.csv file</p>
+  
+  <div id="output"></div>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script>
+    const output = document.getElementById('output');
+    
+    function log(html) {
+      output.innerHTML += html + '<br>';
+    }
+    
+    function section(title, content) {
+      output.innerHTML += `<div class="section"><h2>${title}</h2>${content}</div>`;
+    }
+    
+    log('<h2>⏳ Loading CSV file...</h2>');
+    
+    // First, let's fetch the raw CSV text
+    fetch('/assets/data/stores.csv')
+      .then(response => response.text())
+      .then(csvText => {
+        section('📄 RAW CSV FILE (First 2000 characters)', 
+          `<pre>${csvText.substring(0, 2000)}</pre>`);
+        
+        // Count lines
+        const lines = csvText.split('\n');
+        log(`<p class="success">✅ Total lines in CSV: ${lines.length}</p>`);
+        
+        // Show first 3 lines
+        section('📋 FIRST 3 LINES OF CSV', 
+          `<pre>${lines.slice(0, 3).join('\n')}</pre>`);
+        
+        // Now parse with Papa Parse
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: 'greedy',
+          complete: function(results) {
+            // Show column information
+            const cols = results.meta.fields;
+            log(`<p class="success">✅ Columns detected: ${cols.length}</p>`);
+            
+            section('📊 ALL COLUMN NAMES', 
+              `<pre>${cols.join('\n')}</pre>`);
+            
+            // Check for local_percentage
+            if (cols.includes('local_percentage')) {
+              log(`<p class="success">✅ FOUND: local_percentage column exists!</p>`);
+            } else {
+              log(`<p class="error">❌ MISSING: local_percentage column NOT found!</p>`);
+              log(`<p class="warning">⚠️ The CSV does not contain a local_percentage column. You need to re-export your Google Sheet.</p>`);
+            }
+            
+            // Show first 3 rows of data
+            section('📦 FIRST 3 ROWS OF DATA',
+              `<table>
+                <thead>
+                  <tr>${cols.map(col => `<th>${col}</th>`).join('')}</tr>
+                </thead>
+                <tbody>
+                  ${results.data.slice(0, 3).map(row => 
+                    `<tr>${cols.map(col => `<td>${row[col] || '(empty)'}</td>`).join('')}</tr>`
+                  ).join('')}
+                </tbody>
+              </table>`);
+            
+            // Specifically check local_percentage values
+            if (cols.includes('local_percentage')) {
+              const percentages = results.data.slice(0, 5).map(row => ({
+                name: row.name,
+                percentage: row.local_percentage
+              }));
+              
+              section('🎯 LOCAL_PERCENTAGE VALUES (First 5 restaurants)',
+                `<table>
+                  <tr><th>Restaurant Name</th><th>local_percentage Value</th></tr>
+                  ${percentages.map(p => 
+                    `<tr><td>${p.name}</td><td class="${p.percentage ? 'success' : 'error'}">${p.percentage || '(empty/missing)'}</td></tr>`
+                  ).join('')}
+                </table>`);
+            }
+            
+            // Summary
+            section('📋 SUMMARY',
+              `<p>Total columns: ${cols.length}</p>
+               <p>Total data rows: ${results.data.length}</p>
+               <p>Has local_percentage: ${cols.includes('local_percentage') ? '<span class="success">YES ✅</span>' : '<span class="error">NO ❌</span>'}</p>
+               <p>CSV location: /assets/data/stores.csv</p>`);
+            
+            // Recommendation
+            if (!cols.includes('local_percentage')) {
+              section('🔧 HOW TO FIX',
+                `<ol>
+                  <li>Open your Google Sheet</li>
+                  <li>Make sure column U (local_percentage) has data</li>
+                  <li>Select ALL columns (A through U or beyond)</li>
+                  <li>File → Download → Comma Separated Values (.csv)</li>
+                  <li>Replace /assets/data/stores.csv with the new download</li>
+                  <li>Commit and push to GitHub</li>
+                  <li>Clear cache and reload your site</li>
+                </ol>`);
+            } else {
+              const hasValues = results.data.some(row => row.local_percentage && row.local_percentage !== '0');
+              if (!hasValues) {
+                section('🔧 HOW TO FIX',
+                  `<p class="warning">⚠️ The local_percentage column exists but all values are empty or 0!</p>
+                   <p>Check your Google Sheet column U to make sure it has the percentage values (56, 100, 67, etc.)</p>`);
+              } else {
+                section('✅ CSV IS GOOD!',
+                  `<p class="success">Your CSV file has the local_percentage column with values!</p>
+                   <p>The issue must be in the JavaScript code. Check the browser console for errors.</p>`);
+              }
+            }
+          },
+          error: function(error) {
+            log(`<p class="error">❌ Error parsing CSV: ${error.message}</p>`);
+          }
+        });
+      })
+      .catch(error => {
+        log(`<p class="error">❌ Error loading CSV file: ${error.message}</p>`);
+        log(`<p class="warning">Make sure /assets/data/stores.csv exists and is accessible.</p>`);
+      });
+  </script>
+</body>
+</html>
