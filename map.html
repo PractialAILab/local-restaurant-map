@@ -761,6 +761,7 @@
           allAds = [];
           results.data.forEach(function(row) {
             if (row.ad_text && row.ad_text.trim() !== '') {
+              console.log('📢 Found ad:', row.ad_text);
               allAds.push({
                 text: row.ad_text,
                 link: row.ad_link || '',
@@ -769,6 +770,8 @@
             }
           });
           
+          console.log('📢 Total ads found:', allAds.length);
+          console.log('📢 All ads:', allAds);          
           // Initialize ad display
           if (allAds.length > 0) {
             displayCurrentAd();
