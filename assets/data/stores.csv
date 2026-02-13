@@ -1,5 +1,5 @@
-restaurant_number,name,address,lat,lon,products,subscription_tier,coupon_text,payment_status,beef,pork,chicken,seafood,breads,produce,dairy,desserts,appetizers,local_score
-1,"Caboose Burgers, Pizza & Comfort Food","402 Main St, Antonito CO 81120",,,Comfort Food From Around The World Using Locally Sourced Ingredients!,premium,3 course Gourmet Meal and Beverage with Who Dun It? Murdery Mystery $65 per person,active,yes,yes,yes,NA,yes,yes,yes,yes,yes,9
-2,Local Harvest Restaurant,456 Broadway Denver CO,,,Sourced from Green Valley Dairy,basic,,active,yes,yes,yes,yes,yes,yes,yes,yes,yes,9
-3,Mountain Fresh Bistro,789 Pearl St Boulder CO,,,Locally sourced organic ingredients,basic,,active,yes,no,yes,no,yes,yes,yes,no,no,5
-4,Middle Fork Resort,6878 CO-12,,,Farm to table cafe featuring local productes,premium,3 course Gourmet Meal and Beverage with Who Dun It? Murdery Mystery $65 per person,active,yes,yes,yes,yes,no,yes,yes,no,no,6
+restaurant_number,name,address,lat,lon,products,subscription_tier,coupon_text,payment_status,beef,pork,chicken,seafood,breads,produce,dairy,desserts,appetizers,local_score,ad_text,ad_link,ad_link_text
+1,"Caboose Burgers, Pizza & Comfort Food","402 Main St, Antonito CO 81120",,,Comfort Food From Around The World Using Locally Sourced Ingredients!,premium,3 course Gourmet Meal and Beverage with Who Dun It? Murdery Mystery $65 per person,active,yes,yes,yes,NA,yes,yes,yes,yes,yes,9,,,
+2,Local Harvest Restaurant,456 Broadway Denver CO,,,Sourced from Green Valley Dairy,basic,,active,yes,yes,yes,yes,yes,yes,yes,yes,yes,9,,,
+3,Mountain Fresh Bistro,789 Pearl St Boulder CO,,,Locally sourced organic ingredients,basic,,active,yes,no,yes,no,yes,yes,yes,no,no,5,,,
+4,Middle Fork Resort,6878 CO-12,,,Farm to table cafe featuring local productes,premium,3 course Gourmet Meal and Beverage with Who Dun It? Murdery Mystery $65 per person,active,yes,yes,yes,yes,no,yes,yes,no,no,6,,,
