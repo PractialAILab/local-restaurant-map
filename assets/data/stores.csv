@@ -1,8 +1,8 @@
 name,address,lat,lon,products,subscription_tier,coupon_image_url,payment_status,direct_image_url,beef,pork,chicken,seafood,breads,produce,dairy,desserts,appetizers,local_score
-Green Fork Cafe,123 Main St Denver CO,39.7392,-104.9903,Farm-to-table using local farms,premium,https://drive.google.com/file/d/1FY89nQVGk892aCLaBUcZU8dgcxcC_15R/view?usp=sharing,active,https://drive.google.com/uc?export=view&id=1FY89nQVGk892aCLaBUcZU8dgcxcC_15R,yes,no,yes,no,no,yes,yes,yes,no,5
-Local Harvest Restaurant,456 Broadway Denver CO,39.7294,-104.9847,Sourced from Green Valley Dairy,basic,,active,,yes,yes,yes,yes,yes,yes,yes,yes,yes,9
-Mountain Fresh Bistro,789 Pearl St Boulder CO,40.015,-105.2705,Locally sourced organic ingredients,basic,,active,,yes,no,yes,no,yes,yes,yes,no,no,5
-Middle Fork Resort,6878 CO-12,37.16375,-105.03719,Farm to table cafe featuring local productes,premium,https://drive.google.com/file/d/1o1zni86iJKW7BcOo29WFtaETVq7oWMeX/view?usp=sharing,active,https://drive.google.com/uc?export=view&id=1o1zni86iJKW7BcOo29WFtaETVq7oWMeX,yes,yes,yes,yes,no,yes,yes,no,no,6
+Green Fork Cafe,123 Main St Denver CO,,,Farm-to-table using local farms,premium,https://drive.google.com/file/d/1FY89nQVGk892aCLaBUcZU8dgcxcC_15R/view?usp=sharing,active,https://drive.google.com/uc?export=view&id=1FY89nQVGk892aCLaBUcZU8dgcxcC_15R,yes,no,yes,no,no,yes,yes,yes,no,5
+Local Harvest Restaurant,456 Broadway Denver CO,,,Sourced from Green Valley Dairy,basic,,active,,yes,yes,yes,yes,yes,yes,yes,yes,yes,9
+Mountain Fresh Bistro,789 Pearl St Boulder CO,,,Locally sourced organic ingredients,basic,,active,,yes,no,yes,no,yes,yes,yes,no,no,5
+Middle Fork Resort,6878 CO-12,,,Farm to table cafe featuring local productes,premium,https://drive.google.com/file/d/1o1zni86iJKW7BcOo29WFtaETVq7oWMeX/view?usp=sharing,active,https://drive.google.com/uc?export=view&id=1o1zni86iJKW7BcOo29WFtaETVq7oWMeX,yes,yes,yes,yes,no,yes,yes,no,no,6
 "Caboose Burgers, Pizza & Comfort Food","402 Main St, Antonito CO 81120",,,Comfort Food From Around The World Using Locally Sourced Ingredients!,premium,,active,,yes,yes,yes,NA,yes,yes,yes,yes,yes,9
 ,,,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,
