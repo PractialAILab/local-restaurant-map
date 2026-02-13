@@ -201,11 +201,18 @@
     .category-badge {
       display: inline-block;
       padding: 3px 8px;
-      background: #2ecc71;
       color: white;
       border-radius: 12px;
       font-size: 0.75em;
       font-weight: bold;
+    }
+    
+    .category-badge.local-yes {
+      background: #2ecc71;
+    }
+    
+    .category-badge.local-no {
+      background: #e74c3c;
     }
     
     /* Coupon Indicator */
@@ -218,6 +225,12 @@
       font-size: 0.8em;
       font-weight: bold;
       margin-top: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .coupon-indicator:hover {
+      background: #5a0a7a;
     }
     
     .coupon-link {
@@ -228,6 +241,48 @@
     
     .coupon-link:hover {
       text-decoration: underline;
+    }
+    
+    /* Coupon Dropdown Card */
+    .coupon-dropdown {
+      display: none;
+      margin-top: 10px;
+      padding: 15px;
+      background: #f8f3ff;
+      border: 2px solid #730C99;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(115, 12, 153, 0.2);
+    }
+    
+    .coupon-dropdown.active {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .coupon-dropdown-content {
+      color: #333;
+      line-height: 1.6;
+      font-size: 0.9em;
+    }
+    
+    .coupon-dropdown-header {
+      font-weight: bold;
+      color: #730C99;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
     
     /* Phone and Hours */
@@ -445,12 +500,10 @@
         appetizers: 'Appetizers'
       };
       
-      // GEOCODING FUNCTION - NEW
+      // GEOCODING FUNCTION
       function geocodeAddress(address, callback) {
-        // Clean up address for better geocoding
         var cleanAddress = address;
         
-        // Add ", Colorado" if not present
         if (!address.toLowerCase().includes('colorado') && !address.toLowerCase().includes(', co')) {
           cleanAddress = address + ', Colorado';
         }
@@ -482,7 +535,7 @@
         });
       }
       
-      // PROCESS GEOCODING QUEUE - NEW
+      // PROCESS GEOCODING QUEUE
       function processGeocodingQueue() {
         if (geocodingQueue.length === 0) {
           geocodingInProgress = false;
@@ -502,19 +555,14 @@
             console.warn('❌ Failed to geocode:', item.restaurant.name);
           }
           
-          // Wait 1 second between requests (Nominatim rate limit)
           setTimeout(processGeocodingQueue, 1000);
         });
       }
       
       // Function to calculate percentage from local_score
       function calculatePercentage(restaurant) {
-        // Try to get local_score (column S)
         var score = parseFloat(restaurant.local_score) || 0;
-        
-        // Calculate percentage: (score / 9 categories) * 100
         var percentage = Math.round((score / 9) * 100);
-        
         return percentage;
       }
       
@@ -522,7 +570,6 @@
       function getRankingBadge(restaurant) {
         var percentage = calculatePercentage(restaurant);
         
-        // Determine badge class based on percentage
         var badgeClass = 'ranking-basic';
         var badgeText = 'Basic';
         
@@ -539,14 +586,19 @@
         return '<span class="ranking-badge ' + badgeClass + '" title="' + title + '"></span>';
       }
       
-      // Function to get category badges HTML
+      // Function to get category badges HTML - SHOWS ALL with green/red
       function getCategoryBadges(restaurant) {
         var badges = '';
         var categories = ['beef', 'pork', 'chicken', 'seafood', 'breads', 'produce', 'dairy', 'desserts', 'appetizers'];
         
         categories.forEach(function(cat) {
-          if (restaurant[cat] && restaurant[cat].toLowerCase() === 'yes') {
-            badges += '<span class="category-badge">' + categoryLabels[cat] + '</span>';
+          if (restaurant[cat]) {
+            var value = restaurant[cat].toLowerCase();
+            if (value === 'yes') {
+              badges += '<span class="category-badge local-yes">' + categoryLabels[cat] + '</span>';
+            } else if (value === 'no') {
+              badges += '<span class="category-badge local-no">' + categoryLabels[cat] + '</span>';
+            }
           }
         });
         
@@ -580,21 +632,23 @@
         // Category badges
         html += categoryBadges;
         
-        // Coupon indicator
-        if (restaurant.subscription_tier === 'premium' && restaurant.direct_image_url && restaurant.direct_image_url.trim() !== '') {
-          html += '<div class="coupon-indicator">💰 <a href="' + restaurant.direct_image_url + '" target="_blank" class="coupon-link">Special Offer Available</a></div>';
+        // Coupon indicator with dropdown
+        if (restaurant.subscription_tier === 'premium' && restaurant.coupon_text && restaurant.coupon_text.trim() !== '') {
+          html += '<div class="coupon-indicator" onclick="toggleCoupon(event, ' + index + ')">💰 Special Offer - Click to View</div>';
+          html += '<div class="coupon-dropdown" id="coupon-' + index + '">';
+          html += '<div class="coupon-dropdown-header">🎉 Special Offer:</div>';
+          html += '<div class="coupon-dropdown-content">' + restaurant.coupon_text + '</div>';
+          html += '</div>';
         }
         
         html += '</div>';
         return html;
       }
       
-      // RENDER ALL RESTAURANTS - NEW
+      // RENDER ALL RESTAURANTS
       function renderAllRestaurants() {
-        // Update loading message
         $('.loading p').text('Rendering ' + allRestaurants.length + ' restaurants...');
         
-        // Clear restaurant list and markers
         $('#restaurant-list').empty();
         markersLayer.clearLayers();
         
@@ -603,13 +657,10 @@
         allRestaurants.forEach(function(restaurantObj, index) {
           var restaurant = restaurantObj.data;
           
-          // Only render if we have coordinates
           if (restaurantObj.lat && restaurantObj.lon) {
-            // Create marker
             var marker = L.marker([restaurantObj.lat, restaurantObj.lon]).addTo(markersLayer);
             restaurantObj.marker = marker;
             
-            // Create popup
             var rankingBadge = getRankingBadge(restaurant);
             
             var popupContent = '<div style="min-width: 200px;">';
@@ -622,7 +673,6 @@
             
             marker.bindPopup(popupContent);
             
-            // Add to sidebar
             var cardHtml = createRestaurantCard(restaurant, index);
             $('#restaurant-list').append(cardHtml);
             
@@ -630,7 +680,6 @@
           }
         });
         
-        // Fit map to show all markers
         if (bounds.length > 0) {
           var group = new L.featureGroup(allRestaurants.map(r => r.marker).filter(m => m));
           map.fitBounds(group.getBounds(), { padding: [50, 50] });
@@ -639,7 +688,7 @@
         console.log('✅ Rendered', allRestaurants.length, 'restaurants');
       }
       
-      // Load CSV with cache-busting to force reload
+      // Load CSV with cache-busting
       var csvUrl = '/assets/data/stores.csv?v=' + new Date().getTime();
       
       Papa.parse(csvUrl, {
@@ -663,15 +712,12 @@
             return;
           }
           
-          // Process each restaurant
           results.data.forEach(function(restaurant, index) {
-            // Skip if missing required name
             if (!restaurant.name || !restaurant.address) {
               console.warn('Skipping entry - missing name or address');
               return;
             }
             
-            // Check if lat/lon are already present and valid
             var hasValidCoords = restaurant.lat && restaurant.lon && 
                                 !isNaN(parseFloat(restaurant.lat)) && 
                                 !isNaN(parseFloat(restaurant.lon));
@@ -684,13 +730,11 @@
             };
             
             if (hasValidCoords) {
-              // Use existing coordinates
               restaurantObj.lat = parseFloat(restaurant.lat);
               restaurantObj.lon = parseFloat(restaurant.lon);
               allRestaurants.push(restaurantObj);
               console.log('✅ Using existing coords for:', restaurant.name);
             } else if (restaurant.address) {
-              // Need to geocode
               allRestaurants.push(restaurantObj);
               console.log('🔍 Queuing geocoding for:', restaurant.name);
               geocodingQueue.push({
@@ -718,17 +762,14 @@
         var index = $(this).data('index');
         var restaurant = allRestaurants[index];
         
-        // Update selected state
         $('.restaurant-card').removeClass('selected');
         $(this).addClass('selected');
         
-        // Zoom to marker and open popup
         map.setView([restaurant.lat, restaurant.lon], 15);
         if (restaurant.marker) {
           restaurant.marker.openPopup();
         }
         
-        // Scroll card into view if needed
         $(this)[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       });
       
@@ -737,17 +778,14 @@
         var searchTerm = $(this).val().toLowerCase();
         
         if (searchTerm.length === 0) {
-          // Show all restaurants
           $('.restaurant-card').show();
           return;
         }
         
-        // Filter restaurants
         $('.restaurant-card').each(function() {
           var index = $(this).data('index');
           var restaurant = allRestaurants[index].data;
           
-          // Build searchable text
           var searchable = (
             restaurant.name.toLowerCase() + ' ' +
             restaurant.address.toLowerCase() + ' ' +
@@ -755,7 +793,6 @@
             (restaurant.phone || '').toLowerCase()
           );
           
-          // Add category names to search
           var categories = ['beef', 'pork', 'chicken', 'seafood', 'breads', 'produce', 'dairy', 'desserts', 'appetizers'];
           categories.forEach(function(cat) {
             if (restaurant[cat] && restaurant[cat].toLowerCase() === 'yes') {
@@ -772,16 +809,14 @@
       });
     } // End of initMap function
     
-    // Toggle coupon dropdown function (global scope)
+    // Toggle coupon dropdown function
     function toggleCoupon(event, index) {
-      event.stopPropagation(); // Prevent card click event
+      event.stopPropagation();
       
       var dropdown = $('#coupon-' + index);
       
-      // Close all other dropdowns
       $('.coupon-dropdown').not(dropdown).removeClass('active');
       
-      // Toggle this dropdown
       dropdown.toggleClass('active');
     }
   </script>
