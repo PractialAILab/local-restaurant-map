@@ -19,7 +19,6 @@
       color: #333;
     }
     
-    /* Header */
     header {
       background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
       color: white;
@@ -62,7 +61,6 @@
       opacity: 0.8;
     }
     
-    /* Hero Section */
     .hero {
       background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
       color: white;
@@ -98,7 +96,6 @@
       box-shadow: 0 6px 20px rgba(0,0,0,0.2);
     }
     
-    /* Container */
     .container {
       max-width: 1200px;
       margin: 60px auto;
@@ -116,7 +113,6 @@
       text-align: center;
     }
     
-    /* Benefits Grid */
     .benefits-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -158,82 +154,23 @@
       line-height: 1.7;
     }
     
-    /* Pricing Cards */
-    .pricing-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 40px;
-      margin-top: 50px;
-    }
-    
-    .pricing-card {
+    .faq-item {
       background: white;
-      border-radius: 15px;
-      padding: 40px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-      text-align: center;
-      transition: all 0.3s;
+      padding: 25px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     }
     
-    .pricing-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-    }
-    
-    .pricing-card.featured {
-      border: 3px solid #2ecc71;
-      position: relative;
-    }
-    
-    .pricing-card.featured::before {
-      content: "MOST POPULAR";
-      position: absolute;
-      top: -15px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #2ecc71;
-      color: white;
-      padding: 5px 20px;
-      border-radius: 20px;
-      font-size: 0.8em;
-      font-weight: bold;
-    }
-    
-    .pricing-card h3 {
-      font-size: 1.8em;
-      color: #2c3e50;
-      margin-bottom: 10px;
-    }
-    
-    .price {
-      font-size: 2.5em;
+    .faq-item h3 {
       color: #2ecc71;
-      font-weight: bold;
-      margin: 20px 0;
+      margin-bottom: 15px;
+      font-size: 1.3em;
     }
     
-    .price-period {
-      font-size: 0.4em;
-      color: #7f8c8d;
-      font-weight: normal;
-    }
-    
-    .pricing-features {
-      list-style: none;
-      text-align: left;
-      margin: 30px 0;
-    }
-    
-    .pricing-features li {
-      padding: 10px 0;
-      border-bottom: 1px solid #ecf0f1;
-    }
-    
-    .pricing-features li::before {
-      content: "✓ ";
-      color: #2ecc71;
-      font-weight: bold;
-      margin-right: 10px;
+    .faq-item p {
+      line-height: 1.7;
+      font-size: 1.05em;
     }
     
     .btn {
@@ -257,38 +194,6 @@
       box-shadow: 0 4px 12px rgba(46,204,113,0.3);
     }
     
-    .btn-secondary {
-      background: white;
-      color: #2ecc71;
-      border: 2px solid #2ecc71;
-    }
-    
-    .btn-secondary:hover {
-      background: #2ecc71;
-      color: white;
-    }
-    
-    /* FAQ */
-    .faq-item {
-      background: white;
-      padding: 25px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    }
-    
-    .faq-item h3 {
-      color: #2ecc71;
-      margin-bottom: 15px;
-      font-size: 1.3em;
-    }
-    
-    .faq-item p {
-      line-height: 1.7;
-      font-size: 1.05em;
-    }
-    
-    /* Footer */
     footer {
       background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
       color: white;
@@ -306,7 +211,6 @@
       text-decoration: underline;
     }
     
-    /* Mobile */
     @media (max-width: 768px) {
       .header-content {
         flex-direction: column;
@@ -325,16 +229,11 @@
       .hero h2 {
         font-size: 1.8em;
       }
-      
-      .pricing-container {
-        grid-template-columns: 1fr;
-      }
     }
   </style>
 </head>
 <body>
   
-  <!-- Header -->
   <header>
     <div class="header-content">
       <div class="logo-section">
@@ -342,7 +241,8 @@
         <h1>Better Source</h1>
       </div>
       <nav>
-        <a href="index.html">Map</a>
+        <a href="index.html">Home</a>
+        <a href="map.html">Map</a>
         <a href="about.html">About</a>
         <a href="for-restaurants.html">For Restaurants</a>
         <a href="contact.html">Contact</a>
@@ -350,17 +250,14 @@
     </div>
   </header>
   
-  <!-- Hero -->
   <section class="hero">
     <h2>Showcase Your Local Sourcing</h2>
     <p>Join Better Source and connect with customers who value local food and support community-focused restaurants.</p>
-    <a href="restaurant-application.html" class="hero-btn">Get Started Today</a>
+    <a href="mailto:bettersourceapp@gmail.com?subject=Restaurant Application Inquiry" class="hero-btn">Get Started Today</a>
   </section>
   
-  <!-- Main Content -->
   <div class="container">
     
-    <!-- Benefits -->
     <section class="section">
       <h2>Why Join Better Source?</h2>
       <div class="benefits-grid">
@@ -391,76 +288,34 @@
         
         <div class="benefit-card">
           <h3>Simple & Affordable</h3>
-          <p>No complex setup, no technical requirements. Just sign up, get approved, and start appearing on our map.</p>
+          <p>No complex setup, no technical requirements. Just apply, get approved, and start appearing on our map.</p>
         </div>
       </div>
     </section>
     
-    <!-- Pricing -->
-    <section class="section">
-      <h2>Choose Your Plan</h2>
-      <div class="pricing-container">
-        
-        <!-- Basic Tier -->
-        <div class="pricing-card">
-          <h3>Basic</h3>
-          <div class="price">$49<span class="price-period">/month</span></div>
-          <p style="color: #7f8c8d; margin-bottom: 20px;">or $490/year (save $98)</p>
-          <ul class="pricing-features">
-            <li>Your restaurant on the map</li>
-            <li>Name, address, and location display</li>
-            <li>Local sourcing description</li>
-            <li>Category badges (beef, produce, dairy, etc.)</li>
-            <li>Contact information displayed</li>
-            <li>Search functionality inclusion</li>
-          </ul>
-          <a href="restaurant-application.html" class="btn btn-secondary">Get Started</a>
-        </div>
-        
-        <!-- Premium Tier -->
-        <div class="pricing-card featured">
-          <h3>Premium</h3>
-          <div class="price">$99<span class="price-period">/month</span></div>
-          <p style="color: #7f8c8d; margin-bottom: 20px;">or $990/year (save $198)</p>
-          <ul class="pricing-features">
-            <li><strong>Everything in Basic, plus:</strong></li>
-            <li>Monthly promotional coupon display</li>
-            <li>Coupon appears in map popup</li>
-            <li>Attract deal-seeking customers</li>
-            <li>Update coupons monthly</li>
-            <li>Priority map placement</li>
-          </ul>
-          <a href="restaurant-application.html" class="btn btn-primary">Go Premium</a>
-        </div>
-        
-      </div>
-    </section>
-    
-    <!-- How It Works -->
     <section class="section">
       <h2>How It Works</h2>
       <div class="faq-item">
-        <h3>1. Submit Your Application</h3>
-        <p>Fill out our simple application form with your restaurant details and local sourcing information. Choose your subscription tier and complete payment.</p>
+        <h3>1. Submit Your Inquiry</h3>
+        <p>Contact us to express your interest in joining Better Source. We'll send you detailed information about our program and answer any questions.</p>
       </div>
       
       <div class="faq-item">
-        <h3>2. Get Approved</h3>
-        <p>We review your application to verify your local sourcing commitments. Most applications are approved within 1-2 business days.</p>
+        <h3>2. Review Program Details</h3>
+        <p>We'll provide you with comprehensive information about membership options, benefits, and requirements for listing on our map.</p>
       </div>
       
       <div class="faq-item">
-        <h3>3. Go Live on the Map</h3>
-        <p>Once approved, your restaurant immediately appears on our interactive map with your sourcing information and contact details.</p>
+        <h3>3. Complete Your Application</h3>
+        <p>Once you're ready, you'll fill out an application with your restaurant details and local sourcing information.</p>
       </div>
       
       <div class="faq-item">
-        <h3>4. Update Monthly (Premium Only)</h3>
-        <p>Premium members can submit a new promotional coupon each month to keep customers coming back with fresh offers.</p>
+        <h3>4. Get Approved & Go Live</h3>
+        <p>We review your application to verify your local sourcing commitments. Once approved, your restaurant immediately appears on our interactive map!</p>
       </div>
     </section>
     
-    <!-- FAQs -->
     <section class="section">
       <h2>Common Questions</h2>
       
@@ -475,31 +330,24 @@
       </div>
       
       <div class="faq-item">
-        <h3>Can I cancel anytime?</h3>
-        <p>Yes! Monthly subscriptions can be canceled at any time. Annual subscriptions are non-refundable but you keep your listing for the full year.</p>
+        <h3>What information do I need to provide?</h3>
+        <p>You'll need your restaurant name, address, contact information, a description of your local sourcing practices, and details about which categories you source locally.</p>
       </div>
       
       <div class="faq-item">
-        <h3>How do Premium coupons work?</h3>
-        <p>Each month, premium members upload a promotional coupon image (e.g., "10% off dinner", "Free appetizer"). We display it when customers click your restaurant on the map. You can update it monthly to keep offers fresh.</p>
-      </div>
-      
-      <div class="faq-item">
-        <h3>What if my local sourcing changes?</h3>
-        <p>Simply contact us and we'll update your listing. We want your information to always be accurate and current.</p>
+        <h3>How long does the approval process take?</h3>
+        <p>Most applications are reviewed within 1-2 business days. We'll contact you if we need any additional information.</p>
       </div>
     </section>
     
-    <!-- Final CTA -->
     <section class="section" style="text-align: center; background: #f8f9fa; padding: 60px 40px; border-radius: 15px;">
       <h2 style="color: #2c3e50;">Ready to Join Better Source?</h2>
-      <p style="font-size: 1.2em; margin: 20px 0;">Start attracting local-minded diners today.</p>
-      <a href="restaurant-application.html" class="btn btn-primary" style="font-size: 1.1em; padding: 18px 50px;">Apply Now</a>
+      <p style="font-size: 1.2em; margin: 20px 0;">Contact us today to learn more and get started.</p>
+      <a href="mailto:bettersourceapp@gmail.com?subject=Restaurant Application Inquiry" class="btn btn-primary" style="font-size: 1.1em; padding: 18px 50px;">Contact Us to Apply</a>
     </section>
     
   </div>
   
-  <!-- Footer -->
   <footer>
     <p>&copy; 2026 Better Source - Restaurant Supply Insight</p>
     <p><a href="contact.html">Contact Us</a> | <a href="about.html">About Us</a></p>
