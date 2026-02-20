@@ -1,0 +1,20 @@
+{
+  "short_name": "MDN",
+  "name": "MDN Web Docs",
+  "icons": [
+    {
+      "src": "https://drive.google.com/file/d/167P09w0xj0Bq6uZypDy5NPP7sy5_d48K/view?usp=drive_link",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://drive.google.com/file/d/1CHdg3-Hr4MMWcVF2BvwBTsub3ULVsyGS/view?usp=drive_link",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "bettersource.app",
+  "display": "standalone",
+  "theme_color": "green",
+  "background_color": "white"
+}
