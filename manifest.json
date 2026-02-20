@@ -1,0 +1,61 @@
+{
+  "background_color": "#ffffff",
+  "description": "Discover restaurants in your area that prioritize local sourcing. Support community-focused dining and local farmers.",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "bettersource",
+  "orientation": "any",
+  "scope": "/index.html, /about.html, /contact.html, /for-restaurants/html",
+  "short_name": "bettersource",
+  "start_url": "bettersource.app",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "https://bettersource.app/assets/icons/BS32x32logo.png",
+      "type": "image/png",
+      "sizes": "32x32",
+      "purpose": "any"
+    }
+{
+      "src": "assets/icons/bettersourcelogo 192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    }
+{
+      "src": "assets/icons/bettersourcelogo512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+"screenshots": [
+    {
+      "src": "assets/icons/screenshot home.png",
+      "sizes": "497×534",
+      "type": "image/png",
+      "label": "Home Screen"
+    },
+    {
+      "src": "assets/icons/screenshot about.png",
+      "sizes": "501×554",
+      "type": "image/png",
+      "label": "About Screen"
+    },
+    {
+      "src": "assets/icons/screenshot contact.png",
+      "sizes": "503×402",
+      "type": "image/png",
+      "label": "Contact Screen"
+    },
+    {
+      "src": "assets/icons/screenshot restaurants.png",
+      "sizes": "502×523",
+      "type": "image/png",
+      "label": "For Restaurants Screen"
+    }
+  ],
+  "iarc_rating_id": "18+",
+  "prefer_related_applications": false,
+  "categories": [
+    "food"
+  ]
+}
