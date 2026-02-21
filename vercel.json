@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "public": true,
   "headers": [
     {
       "source": "/assets/(.*)",
@@ -17,15 +16,16 @@
         {
           "key": "Content-Type",
           "value": "text/csv"
-        },
-  "headers": [
+        }
+      ]
+    },
     {
       "source": "/manifest.json",
       "headers": [
         {
           "key": "Content-Type",
           "value": "application/manifest+json"
-        },
+        }
       ]
     }
   ]
